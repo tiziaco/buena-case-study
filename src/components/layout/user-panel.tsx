@@ -5,8 +5,6 @@ import {
   ChevronsUpDown,
   LogOut,
 } from "lucide-react"
-import { useUser } from "@clerk/nextjs"
-import { useClerk } from "@clerk/nextjs"
 
 import {
   Avatar,
@@ -27,40 +25,22 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { Skeleton } from "../ui/skeleton";
 
 
 export function UserDetailsPanel() {
   const { isMobile } = useSidebar()
-  const { isLoaded, isSignedIn, user } = useUser()
-  const { signOut, openUserProfile } = useClerk()
 
-  // Handle sign out
-  const handleSignOutClick = async () => {
-    await signOut();
-  };
-
-  // Show skeleton while Clerk is loading
-  if (!isLoaded || !isSignedIn || !user) {
-    return (
-      <SidebarMenuItem>
-        <SidebarMenuButton size="lg">
-          <Skeleton className="h-8 w-8 rounded-full bg-sidebar-accent" />
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <Skeleton className="h-4 w-24 mb-1 bg-sidebar-accent" />
-            <Skeleton className="h-3 w-28 bg-sidebar-accent" />
-          </div>
-          <ChevronsUpDown className="ml-auto size-4" />
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-    );
+  // Placeholder user data
+  const user = {
+    firstName: "John",
+    lastName: "Doe",
+    imageUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
   }
-
 
   // Generate initials from user's name
   const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase() || 'U';
   const fullName = user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.firstName || user.lastName || 'User';
-  const email = user.primaryEmailAddress?.emailAddress || 'No email';
+  const email = "user@example.com";
 
   return (
     <SidebarMenuItem>
@@ -131,7 +111,7 @@ export function UserDetailsPanel() {
             <DropdownMenuGroup>
               <DropdownMenuItem
                 className="cursor-pointer"
-                onClick={() => openUserProfile()}
+                onClick={() => {/* Account settings placeholder */}}
               >
                 <BadgeCheck />
                 Account
@@ -140,7 +120,7 @@ export function UserDetailsPanel() {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="cursor-pointer"
-              onClick={handleSignOutClick}
+              onClick={() => {/* Sign out placeholder */}}
               >
               <LogOut />
               Log out
