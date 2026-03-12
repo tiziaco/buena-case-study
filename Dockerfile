@@ -24,12 +24,7 @@ COPY postcss.config.mjs .
 COPY tailwind.config.ts .
 
 
-# Clerk environment variables (required at build time)
-ARG NEXT_PUBLIC_APP_URL
-ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
-
-ARG NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+# Next.js app environment variables (required at build time)
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
