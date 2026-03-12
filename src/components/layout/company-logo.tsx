@@ -1,5 +1,6 @@
 "use client"
 import Image from "next/image"
+import { useTheme } from "next-themes"
 import {
   SidebarMenu,
   SidebarMenuItem,
@@ -8,6 +9,11 @@ import { useSidebar } from "@/components/ui/sidebar"
 
 export function CompanyLogo() {
   const { state } = useSidebar()
+  const { resolvedTheme } = useTheme()
+
+  const logoSrc = resolvedTheme === "dark" 
+    ? "/images/buena-logo-white.png" 
+    : "/images/buena-logo-black.png"
 
   return (
     <SidebarMenu className="mb-10">
@@ -15,7 +21,7 @@ export function CompanyLogo() {
         <div className="flex items-center gap-2">
           {state === "collapsed" && (
             <Image
-              src="/images/logo-small.png"
+              src={logoSrc}
               alt="App Logo"
               width={40}
               height={40}
@@ -24,7 +30,7 @@ export function CompanyLogo() {
           )}
           {state !== "collapsed" && (
             <Image
-              src="/images/logo-small.png"
+              src={logoSrc}
               alt="App Logo"
               width={250}
               height={40}
