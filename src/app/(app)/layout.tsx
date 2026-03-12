@@ -1,7 +1,6 @@
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { HUB_NAV } from "@/lib/hub-nav";
-import { UploadManager } from "@/components/transactions/upload-manager";
 
 export default function HubLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,7 +13,6 @@ export default function HubLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </SidebarInset>
-      <UploadManager />
     </SidebarProvider>
   )
 }
