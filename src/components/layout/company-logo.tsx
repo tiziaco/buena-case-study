@@ -27,7 +27,7 @@ export function CompanyLogo() {
   return (
     <SidebarMenu className="mb-10">
       <SidebarMenuItem>
-        <div className="flex items-center gap-2" suppressHydrationWarning>
+        <div className="flex items-center ml-1" suppressHydrationWarning>
           {state === "collapsed" && (
             <Image
               src={logoSrc}
@@ -38,13 +38,16 @@ export function CompanyLogo() {
             />
           )}
           {state !== "collapsed" && (
-            <Image
-              src={logoSrc}
-              alt="App Logo"
-              width={250}
-              height={40}
-              className="h-10 w-auto object-contain"
-            />
+            <div className="flex items-center gap-6">
+              <Image
+                src={logoSrc}
+                alt="App Logo"
+                width={250}
+                height={40}
+                className="h-10 w-auto object-contain"
+              />
+              <span className="text-3xl font-bold">Buen(it)a</span>
+            </div>
           )}
         </div>
       </SidebarMenuItem>
