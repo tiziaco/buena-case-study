@@ -1,4 +1,6 @@
 "use client"
+
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { useTheme } from "next-themes"
 import {
@@ -9,16 +11,23 @@ import { useSidebar } from "@/components/ui/sidebar"
 
 export function CompanyLogo() {
   const { state } = useSidebar()
-  const { resolvedTheme } = useTheme()
+  const { resolvedTheme, theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
-  const logoSrc = resolvedTheme === "dark" 
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Use theme as fallback during SSR to prevent hydration mismatch
+  const currentTheme = mounted ? (resolvedTheme || theme) : theme
+  const logoSrc = currentTheme === "dark" 
     ? "/images/buena-logo-white.png" 
     : "/images/buena-logo-black.png"
 
   return (
     <SidebarMenu className="mb-10">
       <SidebarMenuItem>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" suppressHydrationWarning>
           {state === "collapsed" && (
             <Image
               src={logoSrc}
