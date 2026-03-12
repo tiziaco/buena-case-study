@@ -10,7 +10,7 @@ const publicSans = Public_Sans({subsets:['latin'],variable:'--font-sans'});
 
 
 export const metadata: Metadata = {
-  title: "Bonita App",
+  title: "Buen(it)a App",
   description: "Property management app",
   icons: {
     icon: [
