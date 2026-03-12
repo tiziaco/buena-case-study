@@ -10,15 +10,12 @@ import { Settings, Bell, Database, Cog } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { ServerHealthIndicator } from "@/components/settings/server-status"
 import { GeneralSection } from "./sections/general-section"
 import { NotificationsSection } from "./sections/notifications-section"
-import { DataSection } from "./sections/data-section"
 
 type SettingsSection = "general" | "notifications" | "data"
 
@@ -43,8 +40,6 @@ export function SettingsDialog({ children }: { children?: React.ReactElement }) 
         return <GeneralSection />
       case "notifications":
         return <NotificationsSection />
-      case "data":
-        return <DataSection />
       default:
         return <GeneralSection />
     }
@@ -80,11 +75,7 @@ export function SettingsDialog({ children }: { children?: React.ReactElement }) 
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
-            </SidebarContent>
-            
-            <SidebarFooter>
-              <ServerHealthIndicator />
-            </SidebarFooter>
+            </SidebarContent>          
           </Sidebar>
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="overflow-y-auto flex-1">
