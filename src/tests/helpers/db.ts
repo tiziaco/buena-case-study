@@ -13,11 +13,11 @@ export function createTestPrismaClient(): TestPrismaClient {
 }
 
 export async function cleanDatabase(prisma: TestPrismaClient) {
-  await prisma.$transaction([
-    prisma.unit.deleteMany(),
-    prisma.building.deleteMany(),
-    prisma.propertyStaff.deleteMany(),
-    prisma.property.deleteMany(),
-    prisma.user.deleteMany(),
-  ])
+  await prisma.$transaction(async (tx) => {
+    await tx.unit.deleteMany()
+    await tx.building.deleteMany()
+    await tx.propertyStaff.deleteMany()
+    await tx.property.deleteMany()
+    await tx.user.deleteMany()
+  })
 }
