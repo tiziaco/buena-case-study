@@ -1,5 +1,6 @@
 'use client'
 
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -29,6 +30,8 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
   function merge(patch: Partial<PropertyFiltersProps['filters']>) {
     onChange({ ...filters, ...patch })
   }
+
+  const hasActiveFilters = Object.values(filters).some(Boolean)
 
   const typeValue: string[] = filters.type ? [filters.type] : ['all']
 
@@ -129,6 +132,15 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
           />
         </div>
       </div>
+
+      {/* Clear filters */}
+      {hasActiveFilters && (
+        <div className="flex flex-col justify-end">
+          <Button variant="ghost" size="sm" onClick={() => onChange({})}>
+            Clear filters
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
