@@ -29,7 +29,7 @@ function SidebarEdgeTrigger() {
     <button
       onClick={toggleSidebar}
       aria-label="Toggle Sidebar"
-      className="absolute top-8 -translate-y-1/2 right-2 translate-x-full z-20 flex items-center justify-center w-4 h-6 bg-sidebar border border-sidebar-border rounded-lg shadow-sm cursor-pointer hover:bg-sidebar-accent text-sidebar-foreground transition-colors"
+      className="absolute top-8 -translate-y-1/2 right-1 translate-x-full z-20 flex items-center justify-center w-4 h-6 bg-sidebar border border-sidebar-border rounded-lg shadow-sm cursor-pointer hover:bg-sidebar-accent text-sidebar-foreground transition-colors"
     >
       {state === "expanded"
         ? <ChevronLeft className="size-3.5" />
