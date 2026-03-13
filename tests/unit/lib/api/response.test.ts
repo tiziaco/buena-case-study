@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { apiSuccess, apiError } from '@/lib/api/response'
+import { apiSuccess, apiError, isPrismaNotFound } from '@/lib/api/response'
+import { Prisma } from '@/generated/prisma/client'
 
 describe('apiSuccess', () => {
   it('returns 200 with data wrapped in { data }', async () => {
@@ -39,5 +40,29 @@ describe('apiError', () => {
     const response = apiError('Unauthorized', 401)
     const body = await response.json()
     expect(body).not.toHaveProperty('details')
+  })
+})
+
+describe('isPrismaNotFound', () => {
+  it('returns true for Prisma P2025 error', () => {
+    const err = new Prisma.PrismaClientKnownRequestError('Record not found', {
+      code: 'P2025',
+      clientVersion: '7.0.0',
+    })
+    expect(isPrismaNotFound(err)).toBe(true)
+  })
+
+  it('returns false for other Prisma error codes', () => {
+    const err = new Prisma.PrismaClientKnownRequestError('Unique constraint', {
+      code: 'P2002',
+      clientVersion: '7.0.0',
+    })
+    expect(isPrismaNotFound(err)).toBe(false)
+  })
+
+  it('returns false for non-Prisma errors', () => {
+    expect(isPrismaNotFound(new Error('generic'))).toBe(false)
+    expect(isPrismaNotFound(null)).toBe(false)
+    expect(isPrismaNotFound('string')).toBe(false)
   })
 })

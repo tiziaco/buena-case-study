@@ -79,7 +79,7 @@ export async function getPropertyById(id: string): Promise<PropertyDetail | null
   }) as Promise<PropertyDetail | null>
 }
 
-export async function createProperty(data: CreatePropertyInput): Promise<Property> {
+export async function createProperty(data: CreatePropertyInput): Promise<PropertySummary> {
   return prisma.$transaction(async (tx) => {
     // 1. Generate property number
     const count = await tx.property.count()
@@ -116,7 +116,13 @@ export async function createProperty(data: CreatePropertyInput): Promise<Propert
       })
     }
 
-    // 5. Create PropertyStaff records
+    // 5. Fetch user names (needed for summary return)
+    const users = await tx.user.findMany({
+      where: { id: { in: [data.managerId, data.accountantId] } },
+      select: { id: true, name: true },
+    })
+
+    // 6. Create PropertyStaff records
     await tx.propertyStaff.createMany({
       data: [
         { propertyId: property.id, userId: data.managerId, role: 'MANAGER' },
@@ -124,7 +130,17 @@ export async function createProperty(data: CreatePropertyInput): Promise<Propert
       ],
     })
 
-    return property
+    return {
+      id: property.id,
+      name: property.name,
+      type: property.type,
+      propertyNumber: property.propertyNumber,
+      createdAt: property.createdAt,
+      staff: {
+        manager: users.find((u) => u.id === data.managerId) ?? null,
+        accountant: users.find((u) => u.id === data.accountantId) ?? null,
+      },
+    }
   })
 }
 
