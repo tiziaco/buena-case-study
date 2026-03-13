@@ -30,21 +30,25 @@ describe('CreateUnitSchema', () => {
   it('rejects invalid buildingClientId (not uuid)', () => {
     const result = CreateUnitSchema.safeParse({ ...validUnit, buildingClientId: 'not-a-uuid' })
     expect(result.success).toBe(false)
+    expect(result.error?.issues[0].path).toContain('buildingClientId')
   })
 
   it('rejects empty unitNumber', () => {
     const result = CreateUnitSchema.safeParse({ ...validUnit, unitNumber: '' })
     expect(result.success).toBe(false)
+    expect(result.error?.issues[0].path).toContain('unitNumber')
   })
 
   it('rejects invalid unit type', () => {
     const result = CreateUnitSchema.safeParse({ ...validUnit, type: 'WAREHOUSE' })
     expect(result.success).toBe(false)
+    expect(result.error?.issues[0].path).toContain('type')
   })
 
   it('rejects constructionYear before 1800', () => {
     const result = CreateUnitSchema.safeParse({ ...validUnit, constructionYear: 1799 })
     expect(result.success).toBe(false)
+    expect(result.error?.issues[0].path).toContain('constructionYear')
   })
 
   it('rejects constructionYear after 2100', () => {

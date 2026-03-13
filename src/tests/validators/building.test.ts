@@ -33,6 +33,7 @@ describe('CreateBuildingSchema', () => {
       city: 'Berlin',
     })
     expect(result.success).toBe(false)
+    expect(result.error?.issues[0].path).toContain('street')
   })
 
   it('rejects missing required fields', () => {
@@ -56,5 +57,6 @@ describe('UpdateBuildingSchema', () => {
   it('rejects empty string for city', () => {
     const result = UpdateBuildingSchema.safeParse({ city: '' })
     expect(result.success).toBe(false)
+    expect(result.error?.issues[0].path).toContain('city')
   })
 })

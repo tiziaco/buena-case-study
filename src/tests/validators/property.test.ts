@@ -48,6 +48,14 @@ describe('CreatePropertySchema', () => {
     expect(result.success).toBe(true)
   })
 
+  it('accepts declarationFileUrl as any string (no url format validation)', () => {
+    const result = CreatePropertySchema.safeParse({
+      ...validProperty,
+      declarationFileUrl: 'not-a-url',
+    })
+    expect(result.success).toBe(true)
+  })
+
   it('rejects empty name', () => {
     const result = CreatePropertySchema.safeParse({ ...validProperty, name: '' })
     expect(result.success).toBe(false)
@@ -61,11 +69,13 @@ describe('CreatePropertySchema', () => {
   it('rejects non-uuid managerId', () => {
     const result = CreatePropertySchema.safeParse({ ...validProperty, managerId: 'not-a-uuid' })
     expect(result.success).toBe(false)
+    expect(result.error?.issues[0].path).toContain('managerId')
   })
 
   it('rejects non-uuid accountantId', () => {
     const result = CreatePropertySchema.safeParse({ ...validProperty, accountantId: 'bad' })
     expect(result.success).toBe(false)
+    expect(result.error?.issues[0].path).toContain('accountantId')
   })
 
   it('rejects empty buildings array', () => {

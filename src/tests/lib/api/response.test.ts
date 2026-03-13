@@ -38,6 +38,6 @@ describe('apiError', () => {
   it('omits details when not provided', async () => {
     const response = apiError('Unauthorized', 401)
     const body = await response.json()
-    expect(body.details).toBeUndefined()
+    expect(body).not.toHaveProperty('details')
   })
 })
