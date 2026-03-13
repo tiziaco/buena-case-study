@@ -24,7 +24,8 @@ export async function POST(req: Request): Promise<Response> {
     if (!parsed.success) return apiError('Validation failed', 400, parsed.error.flatten())
     const unit = await createUnit(parsed.data)
     return apiSuccess(serializeUnit(unit), 201)
-  } catch {
+  } catch (e) {
+    console.error('[POST /api/units]', e)
     return apiError('Failed to create unit(s)', 500)
   }
 }

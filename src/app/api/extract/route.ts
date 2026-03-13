@@ -98,7 +98,8 @@ export async function POST(req: Request): Promise<Response> {
     })
 
     return apiSuccess(result.output)
-  } catch {
+  } catch (e) {
+    console.error('[POST /api/extract]', e)
     return apiError('Failed to extract data from PDF', 500)
   }
 }

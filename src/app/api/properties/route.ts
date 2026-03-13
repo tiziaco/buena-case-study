@@ -15,7 +15,8 @@ export async function GET(req: Request): Promise<Response> {
     }
     const properties = await getProperties(filters)
     return apiSuccess(properties)
-  } catch {
+  } catch (e) {
+    console.error('[GET /api/properties]', e)
     return apiError('Failed to fetch properties', 500)
   }
 }
@@ -27,7 +28,8 @@ export async function POST(req: Request): Promise<Response> {
     if (!parsed.success) return apiError('Validation failed', 400, parsed.error.flatten())
     const property = await createProperty(parsed.data)
     return apiSuccess(property, 201)
-  } catch {
+  } catch (e) {
+    console.error('[POST /api/properties]', e)
     return apiError('Failed to create property', 500)
   }
 }
