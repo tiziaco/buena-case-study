@@ -131,3 +131,12 @@ export async function createProperty(data: CreatePropertyInput): Promise<Propert
 export async function updateProperty(id: string, data: UpdatePropertyInput): Promise<Property> {
   return prisma.property.update({ where: { id }, data })
 }
+
+export async function deleteProperty(id: string): Promise<void> {
+  await prisma.$transaction([
+    prisma.unit.deleteMany({ where: { building: { propertyId: id } } }),
+    prisma.building.deleteMany({ where: { propertyId: id } }),
+    prisma.propertyStaff.deleteMany({ where: { propertyId: id } }),
+    prisma.property.delete({ where: { id } }),
+  ])
+}
