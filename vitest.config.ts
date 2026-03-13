@@ -4,11 +4,9 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
+    name: 'unit',
     environment: 'node',
-    globalSetup: ['src/tests/global-setup.ts'],
-    setupFiles: ['src/tests/setup.ts'],
-    fileParallelism: false,
-    testTimeout: 60000,
+    include: ['tests/unit/**/*.test.ts'],
     coverage: {
       provider: 'v8',
       include: ['src/lib/**/*.ts'],
