@@ -65,6 +65,11 @@ export async function POST(req: Request): Promise<Response> {
       return apiError('fileRef is required', 400)
     }
 
+    const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+    if (!UUID_REGEX.test(fileRef)) {
+      return apiError('Invalid fileRef format', 400)
+    }
+
     const filePath = join('/tmp', `${fileRef}.pdf`)
 
     let fileBuffer: Buffer

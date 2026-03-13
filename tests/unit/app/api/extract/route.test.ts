@@ -32,13 +32,22 @@ describe('POST /api/extract', () => {
     expect(res.status).toBe(400)
   })
 
+  it('returns 400 when fileRef is not a valid UUID', async () => {
+    const req = new Request('http://localhost/api/extract', {
+      method: 'POST',
+      body: JSON.stringify({ fileRef: '../../../etc/passwd' }),
+    })
+    const res = await POST(req)
+    expect(res.status).toBe(400)
+  })
+
   it('returns 404 when file does not exist on disk', async () => {
     const { readFile } = await import('node:fs/promises')
     const err = Object.assign(new Error('ENOENT'), { code: 'ENOENT' })
     vi.mocked(readFile).mockRejectedValue(err)
     const req = new Request('http://localhost/api/extract', {
       method: 'POST',
-      body: JSON.stringify({ fileRef: 'nonexistent-uuid' }),
+      body: JSON.stringify({ fileRef: '00000000-0000-0000-0000-000000000000' }),
     })
     const res = await POST(req)
     expect(res.status).toBe(404)
@@ -51,7 +60,7 @@ describe('POST /api/extract', () => {
     vi.mocked(generateText).mockResolvedValue({ output: mockExtractionResult } as any)
     const req = new Request('http://localhost/api/extract', {
       method: 'POST',
-      body: JSON.stringify({ fileRef: 'valid-uuid' }),
+      body: JSON.stringify({ fileRef: '00000000-0000-0000-0000-000000000000' }),
     })
     const res = await POST(req)
     expect(res.status).toBe(200)
@@ -68,7 +77,7 @@ describe('POST /api/extract', () => {
     vi.mocked(generateText).mockRejectedValue(new Error('OpenAI error'))
     const req = new Request('http://localhost/api/extract', {
       method: 'POST',
-      body: JSON.stringify({ fileRef: 'valid-uuid' }),
+      body: JSON.stringify({ fileRef: '00000000-0000-0000-0000-000000000000' }),
     })
     const res = await POST(req)
     expect(res.status).toBe(500)
