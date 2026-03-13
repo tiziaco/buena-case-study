@@ -180,6 +180,24 @@ describe('property service', () => {
       const units = await testPrisma.unit.count({ where: { building: { propertyId: property.id } } })
       expect(units).toBe(0)
     })
+
+    it('returns PropertySummary with staff names', async () => {
+      const manager = await createTestUser('Manager')
+      const accountant = await createTestUser('Accountant')
+      const result = await createProperty(buildPropertyInput(manager.id, accountant.id))
+
+      expect(result).toMatchObject({
+        id: expect.any(String),
+        name: 'Test Property',
+        type: 'WEG',
+        propertyNumber: expect.stringMatching(/^PROP-\d{4}-\d{5}$/),
+        createdAt: expect.any(Date),
+        staff: {
+          manager: { id: manager.id, name: 'Manager' },
+          accountant: { id: accountant.id, name: 'Accountant' },
+        },
+      })
+    })
   })
 
   // ── updateProperty ─────────────────────────────────────────────────────────
