@@ -5,10 +5,10 @@ import { CreateUnitSchema } from './unit'
 export const CreatePropertySchema = z.object({
   name: z.string().min(1),
   type: z.enum(['WEG', 'MV']),
-  managerId: z.string().uuid(),
-  accountantId: z.string().uuid(),
+  managerId: z.uuid(),
+  accountantId: z.uuid(),
   declarationFileUrl: z.string().optional(),
-  buildings: z.array(CreateBuildingSchema.extend({ clientId: z.string().uuid() })).min(1),
+  buildings: z.array(CreateBuildingSchema.extend({ clientId: z.uuid() })).min(1),
   units: z.array(CreateUnitSchema),
 })
 

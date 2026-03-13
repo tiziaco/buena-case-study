@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const CreateUnitSchema = z.object({
-  buildingClientId: z.string().uuid(),
+  buildingClientId: z.uuid(),
   unitNumber: z.string().min(1),
   type: z.enum(['APARTMENT', 'OFFICE', 'GARDEN', 'PARKING']),
   floor: z.number().int().optional(),
