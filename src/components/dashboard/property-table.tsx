@@ -61,7 +61,7 @@ export function PropertyTable({ filters }: PropertyTableProps) {
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>Name</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Property No.</TableHead>
@@ -72,7 +72,7 @@ export function PropertyTable({ filters }: PropertyTableProps) {
           </TableHeader>
           <TableBody>
             {properties.length === 0 ? (
-              <TableRow>
+              <TableRow className="hover:bg-transparent">
                 <TableCell colSpan={6}>
                   <div className="py-12 text-center">
                     <p className="text-sm font-medium">No properties found.</p>
