@@ -60,6 +60,7 @@ model Property {
 model Building {
   id          String   @id @default(uuid())
   propertyId  String
+  name        String?
   street      String
   houseNumber String
   postalCode  String
@@ -79,7 +80,7 @@ model Unit {
   floor            Int?
   entrance         String?
   size             Float?
-  coOwnershipShare Float?
+  coOwnershipShare Decimal?
   constructionYear Int?
   rooms            Float?
   createdAt        DateTime @default(now())
