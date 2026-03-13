@@ -44,7 +44,6 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
         <span className="text-xs font-medium text-muted-foreground">Type</span>
         <ToggleGroup
           variant="outline"
-          size="sm"
           value={typeValue}
           onValueChange={(vals) => {
             merge({ type: vals[0] === 'all' || !vals[0] ? undefined : vals[0] })
@@ -72,7 +71,7 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
               ...(users?.map((u) => ({ value: u.id, label: u.name })) ?? []),
             ]}
           >
-            <SelectTrigger size="sm" className="w-40">
+            <SelectTrigger className="w-40">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
