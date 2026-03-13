@@ -47,15 +47,13 @@ export function DashboardClient({ initialFilters }: DashboardClientProps) {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-14">
         <h1 className="text-2xl font-bold tracking-tight">Properties</h1>
         <Button onClick={() => router.push('/properties/new')}>
           <Plus />
           New property
         </Button>
       </div>
-
-      <Separator className="my-4" />
 
       <PropertyFilters filters={filters} onChange={handleFilterChange} />
 
