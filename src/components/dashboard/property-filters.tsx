@@ -67,6 +67,10 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
             onValueChange={(val) => {
               merge({ managerId: val === 'all' ? undefined : (val ?? '') })
             }}
+            items={[
+              { value: 'all', label: 'All managers' },
+              ...(users?.map((u) => ({ value: u.id, label: u.name })) ?? []),
+            ]}
           >
             <SelectTrigger size="sm" className="w-40">
               <SelectValue />
