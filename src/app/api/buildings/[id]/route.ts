@@ -14,6 +14,7 @@ export async function PATCH(req: Request, { params }: { params: Params }): Promi
     return apiSuccess(building)
   } catch (e) {
     if (isPrismaNotFound(e)) return apiError('Building not found', 404)
+    console.error('[PATCH /api/buildings/:id]', e)
     return apiError('Failed to update building', 500)
   }
 }
@@ -25,6 +26,7 @@ export async function DELETE(_req: Request, { params }: { params: Params }): Pro
     return new Response(null, { status: 204 })
   } catch (e) {
     if (isPrismaNotFound(e)) return apiError('Building not found', 404)
+    console.error('[DELETE /api/buildings/:id]', e)
     return apiError('Failed to delete building', 500)
   }
 }

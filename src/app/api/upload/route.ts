@@ -21,7 +21,8 @@ export async function POST(req: Request): Promise<Response> {
     await writeFile(filePath, buffer)
 
     return apiSuccess({ fileRef })
-  } catch {
+  } catch (e) {
+    console.error('[POST /api/upload]', e)
     return apiError('Failed to upload file', 500)
   }
 }

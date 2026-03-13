@@ -14,7 +14,7 @@ export type PropertySummary = {
   name: string
   type: PropertyType
   propertyNumber: string
-  createdAt: Date
+  createdAt: string
   staff: {
     manager: { id: string; name: string } | null
     accountant: { id: string; name: string } | null
@@ -27,8 +27,8 @@ export type PropertyDetail = {
   type: PropertyType
   propertyNumber: string
   declarationFileUrl: string | null
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string
+  updatedAt: string
   buildings: Array<{
     id: string
     street: string
@@ -36,8 +36,8 @@ export type PropertyDetail = {
     postalCode: string
     city: string
     country: string
-    createdAt: Date
-    updatedAt: Date
+    createdAt: string
+    updatedAt: string
     units: Array<{
       id: string
       unitNumber: string
@@ -48,8 +48,8 @@ export type PropertyDetail = {
       coOwnershipShare: number | null
       constructionYear: number | null
       rooms: number | null
-      createdAt: Date
-      updatedAt: Date
+      createdAt: string
+      updatedAt: string
     }>
   }>
   staff: Array<{

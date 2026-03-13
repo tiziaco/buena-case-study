@@ -10,7 +10,8 @@ export async function POST(req: Request): Promise<Response> {
     const { propertyId, ...buildingData } = parsed.data
     const building = await createBuilding(propertyId, buildingData)
     return apiSuccess(building, 201)
-  } catch {
+  } catch (e) {
+    console.error('[POST /api/buildings]', e)
     return apiError('Failed to create building', 500)
   }
 }

@@ -19,6 +19,7 @@ export async function PATCH(req: Request, { params }: { params: Params }): Promi
     return apiSuccess(serializeUnit(unit))
   } catch (e) {
     if (isPrismaNotFound(e)) return apiError('Unit not found', 404)
+    console.error('[PATCH /api/units/:id]', e)
     return apiError('Failed to update unit', 500)
   }
 }
@@ -30,6 +31,7 @@ export async function DELETE(_req: Request, { params }: { params: Params }): Pro
     return new Response(null, { status: 204 })
   } catch (e) {
     if (isPrismaNotFound(e)) return apiError('Unit not found', 404)
+    console.error('[DELETE /api/units/:id]', e)
     return apiError('Failed to delete unit', 500)
   }
 }

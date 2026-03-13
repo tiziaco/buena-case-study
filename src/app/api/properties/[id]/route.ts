@@ -23,7 +23,8 @@ export async function GET(_req: Request, { params }: { params: Params }): Promis
       })),
     }
     return apiSuccess(serialized)
-  } catch {
+  } catch (e) {
+    console.error('[GET /api/properties/:id]', e)
     return apiError('Failed to fetch property', 500)
   }
 }
@@ -38,6 +39,7 @@ export async function PATCH(req: Request, { params }: { params: Params }): Promi
     return apiSuccess(property)
   } catch (e) {
     if (isPrismaNotFound(e)) return apiError('Property not found', 404)
+    console.error('[PATCH /api/properties/:id]', e)
     return apiError('Failed to update property', 500)
   }
 }
@@ -49,6 +51,7 @@ export async function DELETE(_req: Request, { params }: { params: Params }): Pro
     return new Response(null, { status: 204 })
   } catch (e) {
     if (isPrismaNotFound(e)) return apiError('Property not found', 404)
+    console.error('[DELETE /api/properties/:id]', e)
     return apiError('Failed to delete property', 500)
   }
 }

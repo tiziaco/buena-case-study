@@ -61,7 +61,7 @@ export async function getProperties(filters?: PropertyFilters): Promise<Property
     name: p.name,
     type: p.type,
     propertyNumber: p.propertyNumber,
-    createdAt: p.createdAt,
+    createdAt: p.createdAt.toISOString(),
     staff: {
       manager: p.staff.find((s) => s.role === 'MANAGER')?.user ?? null,
       accountant: p.staff.find((s) => s.role === 'ACCOUNTANT')?.user ?? null,
@@ -135,7 +135,7 @@ export async function createProperty(data: CreatePropertyInput): Promise<Propert
       name: property.name,
       type: property.type,
       propertyNumber: property.propertyNumber,
-      createdAt: property.createdAt,
+      createdAt: property.createdAt.toISOString(),
       staff: {
         manager: users.find((u) => u.id === data.managerId) ?? null,
         accountant: users.find((u) => u.id === data.accountantId) ?? null,
