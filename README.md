@@ -9,6 +9,7 @@ A property management dashboard built as part of the Buena Tech Case Study. Allo
 - **Validation:** Zod · React Hook Form
 - **State:** Zustand
 - **UI:** shadcn/ui · Tailwind CSS
+- **Testing:** Vitest · Testcontainers
 - **AI:** Vercel AI SDK (PDF extraction)
 - **URL state:** nuqs
 
@@ -42,7 +43,6 @@ Edit `.env` and fill in your values:
 
 ```env
 DATABASE_URL=postgresql://user:password@localhost:5432/buena
-TEST_DATABASE_URL=postgresql://user:password@localhost:5432/buena_test
 OPENAI_API_KEY=your_key_here   # optional
 ```
 
@@ -80,23 +80,18 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. The app red
 
 ## Running Tests
 
-### Unit tests
-
-Unit tests run against a mocked Prisma client — no database required.
-
 ```bash
-npm run test
+npm test                        # run all tests (unit + integration)
+npm run test:unit               # unit tests only
+npm run test:unit:watch         # unit tests in watch mode
+npm run test:integration        # integration tests only
+npm run test:coverage           # full suite with coverage report
+npm run test:coverage:integration  # integration tests with coverage report
 ```
 
-### Integration tests
+No manual database setup is required — integration tests use [Testcontainers](https://testcontainers.com/) to spin up a real PostgreSQL instance automatically, run migrations, and tear it down when done.
 
-Integration tests run against a real database (`TEST_DATABASE_URL`). Make sure Docker is running before executing them.
-
-```bash
-npm run test:integration
-```
-
-Migrations are applied automatically to the test database before the suite runs.
+**Requires Docker to be running.**
 
 ---
 
