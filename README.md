@@ -81,17 +81,17 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. The app red
 ## Running Tests
 
 ```bash
-npm test
+npm test                        # run all tests (unit + integration)
+npm run test:unit               # unit tests only
+npm run test:unit:watch         # unit tests in watch mode
+npm run test:integration        # integration tests only
+npm run test:coverage           # full suite with coverage report
+npm run test:coverage:integration  # integration tests with coverage report
 ```
 
-This runs the full suite: Zod validator tests, API helper tests, and service integration tests. No manual database setup is required — integration tests use [Testcontainers](https://testcontainers.com/) to spin up a real PostgreSQL instance automatically, run migrations, and tear it down when done.
+No manual database setup is required — integration tests use [Testcontainers](https://testcontainers.com/) to spin up a real PostgreSQL instance automatically, run migrations, and tear it down when done.
 
 **Requires Docker to be running.**
-
-```bash
-npm run test:coverage   # with coverage report
-npm run test:watch      # watch mode
-```
 
 ---
 
