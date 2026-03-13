@@ -87,7 +87,7 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
           <Input
             type="number"
             min={0}
-            placeholder="Min sqm"
+            placeholder="Min"
             value={filters.sizeMin ?? ''}
             onChange={(e) => merge({ sizeMin: e.target.value })}
             className="w-24"
@@ -96,7 +96,7 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
           <Input
             type="number"
             min={0}
-            placeholder="Max sqm"
+            placeholder="Max"
             value={filters.sizeMax ?? ''}
             onChange={(e) => merge({ sizeMax: e.target.value })}
             className="w-24"
@@ -112,7 +112,7 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
             type="number"
             min={1800}
             max={2100}
-            placeholder="From year"
+            placeholder="From"
             value={filters.yearMin ?? ''}
             onChange={(e) => merge({ yearMin: e.target.value })}
             className="w-24"
@@ -122,7 +122,7 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
             type="number"
             min={1800}
             max={2100}
-            placeholder="To year"
+            placeholder="To"
             value={filters.yearMax ?? ''}
             onChange={(e) => merge({ yearMax: e.target.value })}
             className="w-24"
