@@ -1,0 +1,135 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { Trash2 } from 'lucide-react'
+
+import { useProperties } from '@/hooks/use-properties'
+import type { PropertyFilters } from '@/types/property'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { DeletePropertyDialog } from '@/components/dashboard/delete-property-dialog'
+import { PropertyTableSkeleton } from '@/components/dashboard/property-table-skeleton'
+
+const dateFormatter = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium' })
+
+interface PropertyTableProps {
+  filters: PropertyFilters
+}
+
+export function PropertyTable({ filters }: PropertyTableProps) {
+  const { data, isLoading, isError, error } = useProperties(filters)
+
+  const [pendingDelete, setPendingDelete] = useState<{
+    id: string
+    name: string
+  } | null>(null)
+
+  useEffect(() => {
+    if (error) {
+      toast.error('Failed to load properties')
+    }
+  }, [error])
+
+  if (isLoading) {
+    return <PropertyTableSkeleton />
+  }
+
+  if (isError) {
+    return (
+      <div className="rounded-md border">
+        <div className="flex flex-col items-center justify-center py-12 gap-2">
+          <p className="text-sm font-medium">Could not load properties</p>
+          <p className="text-sm text-muted-foreground">An error occurred. Please try again.</p>
+        </div>
+      </div>
+    )
+  }
+
+  const properties = data ?? []
+
+  return (
+    <>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Property No.</TableHead>
+              <TableHead>Manager</TableHead>
+              <TableHead>Created</TableHead>
+              <TableHead className="w-10" />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {properties.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6}>
+                  <div className="py-12 text-center">
+                    <p className="text-sm font-medium">No properties found.</p>
+                    <p className="text-muted-foreground mt-1 text-sm">
+                      Try adjusting your filters or create a new property.
+                    </p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              properties.map((property) => (
+                <TableRow key={property.id} className="group">
+                  <TableCell className="font-medium">{property.name}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{property.type}</Badge>
+                  </TableCell>
+                  <TableCell className="font-mono text-muted-foreground">
+                    {property.propertyNumber}
+                  </TableCell>
+                  <TableCell>
+                    {property.staff.manager?.name ?? (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {dateFormatter.format(new Date(property.createdAt))}
+                  </TableCell>
+                  <TableCell className="w-10 text-right">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="opacity-0 transition-opacity group-hover:opacity-100"
+                      onClick={() =>
+                        setPendingDelete({ id: property.id, name: property.name })
+                      }
+                    >
+                      <Trash2 />
+                      <span className="sr-only">Delete {property.name}</span>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {pendingDelete && (
+        <DeletePropertyDialog
+          propertyId={pendingDelete.id}
+          propertyName={pendingDelete.name}
+          open={pendingDelete !== null}
+          onOpenChange={(open) => {
+            if (!open) setPendingDelete(null)
+          }}
+        />
+      )}
+    </>
+  )
+}
