@@ -16,3 +16,6 @@ export const UpdateUnitSchema = CreateUnitSchema.omit({ buildingClientId: true }
 
 export type CreateUnitInput = z.infer<typeof CreateUnitSchema>
 export type UpdateUnitInput = z.infer<typeof UpdateUnitSchema>
+
+export const BulkCreateUnitSchema = z.object({ units: z.array(CreateUnitSchema) })
+export type BulkCreateUnitInput = z.infer<typeof BulkCreateUnitSchema>

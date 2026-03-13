@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { CreateUnitSchema, UpdateUnitSchema } from '@/lib/validators/unit'
+import { CreateUnitSchema, UpdateUnitSchema, BulkCreateUnitSchema } from '@/lib/validators/unit'
 import { v4 as uuidv4 } from 'uuid'
 
 const validUnit = {
@@ -75,6 +75,39 @@ describe('UpdateUnitSchema', () => {
 
   it('rejects invalid type in update', () => {
     const result = UpdateUnitSchema.safeParse({ type: 'BARN' })
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('BulkCreateUnitSchema', () => {
+  it('accepts an array of valid units', () => {
+    const result = BulkCreateUnitSchema.safeParse({
+      units: [
+        {
+          buildingClientId: '550e8400-e29b-41d4-a716-446655440000',
+          unitNumber: 'A-01',
+          type: 'APARTMENT',
+        },
+        {
+          buildingClientId: '550e8400-e29b-41d4-a716-446655440000',
+          unitNumber: 'A-02',
+          type: 'PARKING',
+        },
+      ],
+    })
+    expect(result.success).toBe(true)
+    expect(result.data?.units).toHaveLength(2)
+  })
+
+  it('rejects missing units key', () => {
+    const result = BulkCreateUnitSchema.safeParse({ items: [] })
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects invalid unit inside array', () => {
+    const result = BulkCreateUnitSchema.safeParse({
+      units: [{ buildingClientId: 'not-a-uuid', unitNumber: 'A-01', type: 'APARTMENT' }],
+    })
     expect(result.success).toBe(false)
   })
 })
