@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, beforeAll, afterAll, vi } from 'vitest'
-import { createTestPrismaClient, cleanDatabase } from '@/tests/helpers/db'
+import { createTestPrismaClient, cleanDatabase } from '../../helpers/db'
 import { getUsers } from '@/lib/services/user'
 
 let testPrisma: ReturnType<typeof createTestPrismaClient>

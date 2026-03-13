@@ -1,12 +1,31 @@
 import { defineConfig } from 'vitest/config'
-import tsconfigPaths from 'vite-tsconfig-paths'
+import { resolve } from 'path'
+
+const srcAlias = { '@': resolve(__dirname, './src') }
 
 export default defineConfig({
-  plugins: [tsconfigPaths()],
   test: {
-    name: 'unit',
-    environment: 'node',
-    include: ['tests/unit/**/*.test.ts'],
+    projects: [
+      {
+        resolve: { alias: srcAlias },
+        test: {
+          name: 'unit',
+          environment: 'node',
+          include: ['tests/unit/**/*.test.ts'],
+        },
+      },
+      {
+        resolve: { alias: srcAlias },
+        test: {
+          name: 'integration',
+          environment: 'node',
+          include: ['tests/integration/**/*.test.ts'],
+          globalSetup: ['tests/integration/global-setup.ts'],
+          fileParallelism: false,
+          testTimeout: 60000,
+        },
+      },
+    ],
     coverage: {
       provider: 'v8',
       include: ['src/lib/**/*.ts'],

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, beforeAll, afterAll, vi } from 'vitest'
 import { v4 as uuidv4 } from 'uuid'
-import { createTestPrismaClient, cleanDatabase } from '@/tests/helpers/db'
+import { createTestPrismaClient, cleanDatabase } from '../../helpers/db'
 import { createBuilding, updateBuilding, deleteBuilding } from '@/lib/services/building'
 
 let testPrisma: ReturnType<typeof createTestPrismaClient>

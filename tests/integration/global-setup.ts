@@ -8,7 +8,7 @@ export async function setup({ provide }: { provide: (key: string, value: string)
   execSync(`npx prisma migrate deploy`, {
     env: { ...process.env, DATABASE_URL: databaseUrl },
     stdio: 'inherit',
-    cwd: '/Users/tizianoiacovelli/projects/buenita_app',
+    cwd: process.cwd(),
   })
 
   provide('databaseUrl', databaseUrl)
