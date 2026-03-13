@@ -1,6 +1,6 @@
 {
-  "name": "web-app",
-  "version": "0.1.0",
+  "name": "buenita-app",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
+    "@prisma/adapter-pg": "^7.5.0",
+    "@prisma/client": "^7.5.0",
     "@tanstack/react-query": "^5.90.21",
     "@tanstack/react-query-devtools": "^5.91.3",
     "@tanstack/react-table": "^8.21.3",
@@ -19,6 +21,7 @@
     "lucide-react": "^0.577.0",
     "next": "16.1.6",
     "next-themes": "^0.4.6",
+    "pg": "^8.20.0",
     "react": "19.2.4",
     "react-day-picker": "^9.14.0",
     "react-dom": "19.2.4",
@@ -29,14 +32,21 @@
     "zod": "^4.3.6",
     "zustand": "^5.0.11"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^25",
+    "@types/node": "^25.5.0",
+    "@types/pg": "^8.11.11",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.3.1",
     "eslint": "^9.39.3",
     "eslint-config-next": "16.1.6",
+    "prisma": "^7.5.0",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
