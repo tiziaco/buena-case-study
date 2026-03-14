@@ -124,7 +124,7 @@ export function UnitTableRow({
           {...register(`units.${index}.entrance`)}
           {...getInputProps(3)}
           className="h-8 w-24"
-          placeholder="A"
+          placeholder="-"
         />
       </td>
 
@@ -170,7 +170,7 @@ export function UnitTableRow({
           type="number"
           step="0.5"
           className="h-8 w-16"
-          placeholder="3"
+          placeholder="-"
         />
       </td>
 
