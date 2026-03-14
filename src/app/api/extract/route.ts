@@ -82,9 +82,6 @@ export async function POST(req: Request): Promise<Response> {
       throw e
     }
 
-    const base64Data = fileBuffer.toString('base64')
-    const fileDataUrl = `data:application/pdf;base64,${base64Data}`
-
     const result = await generateText({
       model: openai('gpt-4o-mini'),
       messages: [
@@ -92,7 +89,7 @@ export async function POST(req: Request): Promise<Response> {
           role: 'user',
           content: [
             { type: 'text', text: EXTRACTION_PROMPT },
-            { type: 'file', data: fileDataUrl, mediaType: 'application/pdf' },
+            { type: 'file', data: new Uint8Array(fileBuffer), mediaType: 'application/pdf' },
           ],
         },
       ],
