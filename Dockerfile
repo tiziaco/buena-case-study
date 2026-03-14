@@ -16,12 +16,17 @@ RUN \
   else echo "Warning: Lockfile not found. It is recommended to commit lockfiles to version control." && yarn install; \
   fi
 
+COPY prisma ./prisma
+COPY prisma.config.ts .
 COPY src ./src
 COPY public ./public
 COPY next.config.ts .
 COPY tsconfig.json .
 COPY postcss.config.mjs .
 COPY tailwind.config.ts .
+
+# Generate Prisma Client
+RUN npx prisma generate
 
 
 # Next.js app environment variables (required at build time)
@@ -42,17 +47,32 @@ FROM base AS runner
 WORKDIR /app
 
 # Don't run production as root
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-USER nextjs
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/tailwind.config.ts ./
-COPY --from=builder /app/postcss.config.mjs ./
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+
+# Copy Prisma schema (needed by CLI for migrations/seeding at startup)
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./
+
+# Copy the already-generated Prisma client — no need to regenerate
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+
+# Copy Prisma CLI + tsx for entrypoint (migrate deploy + db seed)
+COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder /app/node_modules/tsx ./node_modules/tsx
+
+# Copy and set up entrypoint script
+COPY --chown=nextjs:nodejs docker-entrypoint.sh ./
+RUN chmod +x docker-entrypoint.sh
+
+USER nextjs
 
 # Environment variables must be redefined at run time
 # (defined in the docker-compose.yml)
@@ -62,4 +82,4 @@ ENV NEXT_TELEMETRY_DISABLED=1
 EXPOSE 3000
 ENV PORT=3000
 
-CMD ["node", "server.js"]
+CMD ["./docker-entrypoint.sh"]

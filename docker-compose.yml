@@ -6,6 +6,9 @@ services:
       dockerfile: Dockerfile
     env_file:
       - .env
+    environment:
+      # Override DATABASE_URL for Docker networking (use service name instead of localhost)
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     restart: always
     volumes:
       - static-files:/app/.next/static
@@ -14,7 +17,8 @@ services:
     networks:
       - tmp_network
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   postgres:
     container_name: postgres
@@ -29,6 +33,11 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - tmp_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   static-files:
