@@ -124,7 +124,7 @@ export function PropertyCreationWizard() {
           <p className="text-sm text-destructive">{submitError}</p>
         )}
 
-        <div className="sticky bottom-0 -mx-4 flex items-center justify-between border-t bg-background px-4 pt-2">
+        <div className="sticky bottom-0 -mx-4 flex items-center justify-between border-t border-border/40 bg-background/80 px-4 pt-2 backdrop-blur-sm">
           {step > 1 ? (
             <Button variant="outline" onClick={handleBack} disabled={isDisabled}>
               Back
