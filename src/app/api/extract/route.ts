@@ -35,6 +35,8 @@ const ExtractionSchema = z.object({
   ),
 })
 
+export type ExtractionResult = z.infer<typeof ExtractionSchema>
+
 const EXTRACTION_PROMPT = `Extract structured data from this German property declaration (Teilungserklärung).
 
 Return the following fields:
