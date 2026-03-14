@@ -22,4 +22,5 @@ export const UpdatePropertySchema = z.object({
 })
 
 export type CreatePropertyInput = z.infer<typeof CreatePropertySchema>
+export type CreatePropertyFormValues = z.input<typeof CreatePropertySchema>
 export type UpdatePropertyInput = z.infer<typeof UpdatePropertySchema>

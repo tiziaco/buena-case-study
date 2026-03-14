@@ -3,7 +3,7 @@
 import { useFormContext, useFieldArray } from 'react-hook-form'
 import { Plus, Trash2 } from 'lucide-react'
 
-import type { CreatePropertyInput } from '@/lib/validators/property'
+import type { CreatePropertyFormValues } from '@/lib/validators/property'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardHeader, CardTitle, CardAction, CardContent } from '@/components/ui/card'
@@ -28,7 +28,7 @@ export function Step2Buildings() {
     setValue,
     watch,
     formState: { errors },
-  } = useFormContext<CreatePropertyInput>()
+  } = useFormContext<CreatePropertyFormValues>()
 
   const { fields, append, remove } = useFieldArray({ control, name: 'buildings' })
 

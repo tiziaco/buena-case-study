@@ -4,7 +4,7 @@ import { useRef } from 'react'
 import { useFormContext, Controller } from 'react-hook-form'
 import { Copy, Trash2 } from 'lucide-react'
 
-import type { CreatePropertyInput } from '@/lib/validators/property'
+import type { CreatePropertyFormValues } from '@/lib/validators/property'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -39,7 +39,7 @@ export function UnitTableRow({
   onDelete,
   onAppendRow,
 }: UnitTableRowProps) {
-  const { register, control, watch } = useFormContext<CreatePropertyInput>()
+  const { register, control, watch } = useFormContext<CreatePropertyFormValues>()
   const buildingClientId = watch(`units.${index}.buildingClientId`)
   const rowRef = useRef<HTMLTableRowElement>(null)
 

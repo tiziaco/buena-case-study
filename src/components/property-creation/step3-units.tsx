@@ -4,7 +4,7 @@ import React from 'react'
 import { useFormContext, useFieldArray } from 'react-hook-form'
 import { Plus } from 'lucide-react'
 
-import type { CreatePropertyInput } from '@/lib/validators/property'
+import type { CreatePropertyFormValues } from '@/lib/validators/property'
 import { Button } from '@/components/ui/button'
 import { UnitTableRow } from './unit-table-row'
 
@@ -13,7 +13,7 @@ export function Step3Units() {
     control,
     watch,
     formState: { errors },
-  } = useFormContext<CreatePropertyInput>()
+  } = useFormContext<CreatePropertyFormValues>()
 
   const { fields, append, insert, remove } = useFieldArray({ control, name: 'units' })
 

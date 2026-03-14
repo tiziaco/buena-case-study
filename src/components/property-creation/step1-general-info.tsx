@@ -4,7 +4,7 @@ import { useRef, useState } from 'react'
 import { useFormContext, Controller } from 'react-hook-form'
 import { Upload, X, CheckCircle2, Loader2 } from 'lucide-react'
 
-import type { CreatePropertyInput } from '@/lib/validators/property'
+import type { CreatePropertyFormValues } from '@/lib/validators/property'
 import type { ExtractionResult } from '@/app/api/extract/route'
 import type { UnitType } from '@/generated/prisma/enums'
 import { useUsers } from '@/hooks/use-users'
@@ -21,7 +21,7 @@ import { Field, FieldTitle, FieldError } from '@/components/ui/field'
 
 // ─── Extraction helper ────────────────────────────────────────────────────────
 
-function mapExtractionToForm(extraction: ExtractionResult): Partial<CreatePropertyInput> {
+function mapExtractionToForm(extraction: ExtractionResult): Partial<CreatePropertyFormValues> {
   const buildings = extraction.buildings.map((b) => ({
     clientId: crypto.randomUUID(),
     name: b.name ?? undefined,
@@ -39,11 +39,11 @@ function mapExtractionToForm(extraction: ExtractionResult): Partial<CreateProper
       unitNumber: u.number,
       type: u.type.toUpperCase() as UnitType,
       floor: u.floor ?? undefined,
-      size: u.size ?? undefined,
+      size: u.size != null && u.size > 0 ? u.size : undefined,
       entrance: u.entrance ?? undefined,
-      coOwnershipShare: u.co_ownership_share ?? undefined,
+      coOwnershipShare: u.co_ownership_share != null && u.co_ownership_share > 0 ? u.co_ownership_share : undefined,
       constructionYear: u.construction_year ?? undefined,
-      rooms: u.rooms ?? undefined,
+      rooms: u.rooms != null && u.rooms > 0 ? u.rooms : undefined,
     }
   })
 
@@ -74,7 +74,7 @@ export function Step1GeneralInfo({ isExtracting, setIsExtracting }: Step1General
     setValue,
     watch,
     formState: { errors },
-  } = useFormContext<CreatePropertyInput>()
+  } = useFormContext<CreatePropertyFormValues>()
 
   const { data: users = [] } = useUsers()
 

@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 
-import { CreatePropertySchema, type CreatePropertyInput } from '@/lib/validators/property'
+import { CreatePropertySchema, type CreatePropertyInput, type CreatePropertyFormValues } from '@/lib/validators/property'
 import { Button } from '@/components/ui/button'
 import { StepIndicator } from './step-indicator'
 import { Step1GeneralInfo } from './step1-general-info'
@@ -29,7 +29,7 @@ function newBuilding() {
 export function PropertyCreationWizard() {
   const router = useRouter()
 
-  const form = useForm<CreatePropertyInput>({
+  const form = useForm<CreatePropertyFormValues, unknown, CreatePropertyInput>({
     resolver: zodResolver(CreatePropertySchema),
     defaultValues: {
       name: '',
