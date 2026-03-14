@@ -25,7 +25,7 @@ export function StepIndicator({ step, highestStepReached, onStepClick }: StepInd
         const isClickable = isCompleted
 
         return (
-          <div key={n} className="flex flex-1 items-center">
+          <div key={n} className={cn('flex items-center', i < STEPS.length - 1 && 'flex-1')}>
             <button
               type="button"
               disabled={!isClickable}

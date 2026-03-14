@@ -107,14 +107,16 @@ export function PropertyCreationWizard() {
 
   return (
     <FormProvider {...form}>
-      <div className="mx-auto max-w-3xl px-4 py-8 flex flex-col gap-8">
+      <div className="mx-auto max-w-4xl px-4 py-8 flex flex-col gap-8">
         <h1 className="text-2xl font-semibold">New property</h1>
 
-        <StepIndicator
-          step={step}
-          highestStepReached={highestStepReached}
-          onStepClick={(s) => setStep(s)}
-        />
+        <div className="mx-auto w-full max-w-2xl">
+          <StepIndicator
+            step={step}
+            highestStepReached={highestStepReached}
+            onStepClick={(s) => setStep(s)}
+          />
+        </div>
 
         <div className="flex flex-col gap-6">
           {step === 1 && (
