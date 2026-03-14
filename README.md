@@ -18,14 +18,27 @@ A property management dashboard built as part of the Buena Tech Case Study. Allo
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) v20+
-- [Docker](https://www.docker.com/) (for PostgreSQL)
-- An OpenAI API key (optional — only required for PDF extraction)
+- [Docker](https://www.docker.com/)
+- An OpenAI API key
 
 ---
 
 ## Setup
 
-### 1. Clone and install
+### Quick Start (using Make)
+
+```bash
+git clone https://github.com/tiziaco/buenita_app.git
+cd buenita_app
+cp .env.example .env
+# Edit .env with your DATABASE_URL and OPENAI_API_KEY
+make setup
+make dev
+```
+
+### Manual Setup
+
+#### 1. Clone and install
 
 ```bash
 git clone <repo-url>
@@ -33,7 +46,7 @@ cd buenita_app
 npm install
 ```
 
-### 2. Configure environment variables
+#### 2. Configure environment variables
 
 ```bash
 cp .env.example .env
@@ -46,25 +59,35 @@ DATABASE_URL=postgresql://user:password@localhost:5432/buena
 OPENAI_API_KEY=your_key_here   # optional
 ```
 
-### 3. Start the database
+#### 3. Start the database
 
 ```bash
 docker compose up -d
 ```
 
-### 4. Run migrations
+#### 4. Run migrations
 
 ```bash
 npx prisma migrate dev
 ```
 
-### 5. Seed sample data
+#### 5. Seed sample data
 
 ```bash
 npx prisma db seed
 ```
 
 This populates the database with 8 users and 2 sample properties (with buildings and units) so the dashboard has real data from day one.
+
+### Available Make Commands
+
+Run `make help` to see all available commands:
+
+- **Setup**: `make setup` - Full automated setup
+- **Docker**: `make docker-up`, `make docker-down`, `make docker-logs`
+- **Database**: `make migrate`, `make seed`, `make db-reset`
+- **Testing**: `make test`, `make test-unit`, `make test-coverage`
+- **Development**: `make dev` - Start development server
 
 ---
 
@@ -79,6 +102,17 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. The app red
 ---
 
 ## Running Tests
+
+### Using Make (recommended)
+
+```bash
+make test             # run all tests (unit + integration)
+make test-unit        # unit tests only
+make test-integration # integration tests only
+make test-coverage    # full suite with coverage report
+```
+
+### Using npm directly
 
 ```bash
 npm test                        # run all tests (unit + integration)
