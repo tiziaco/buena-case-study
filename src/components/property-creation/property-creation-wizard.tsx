@@ -82,7 +82,7 @@ export function PropertyCreationWizard() {
         body: JSON.stringify(form.getValues()),
       })
 
-      if (!res.ok) throw new Error('Failed to create property')
+      if (res.status !== 201) throw new Error('Failed to create property')
 
       toast.success('Property created')
       router.push('/dashboard')
