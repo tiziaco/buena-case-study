@@ -90,6 +90,7 @@ export function UnitTableRow({
             <Select
               value={field.value}
               onValueChange={field.onChange}
+              items={UNIT_TYPES.map((t) => ({ value: t.value, label: t.label }))}
             >
               <SelectTrigger className="h-8 w-32" onKeyDown={(e) => handleKeyDown(1, e)}>
                 <SelectValue placeholder="Type" />
