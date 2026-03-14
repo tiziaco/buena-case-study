@@ -1,8 +1,8 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useFormContext, Controller } from 'react-hook-form'
-import { Upload, X, CheckCircle2, Loader2 } from 'lucide-react'
+import { CheckCircle2, X } from 'lucide-react'
 
 import type { CreatePropertyFormValues } from '@/lib/validators/property'
 import type { ExtractionResult } from '@/lib/validators/extraction'
@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Field, FieldTitle, FieldError } from '@/components/ui/field'
+import { UploadZone } from './upload-zone'
 
 // ─── Extraction helper ────────────────────────────────────────────────────────
 
@@ -83,26 +84,24 @@ export function Step1GeneralInfo({ isExtracting, setIsExtracting }: Step1General
   const managerOptions = users.filter((u) => u.id !== watchedAccountantId)
   const accountantOptions = users.filter((u) => u.id !== watchedManagerId)
 
+  const [file, setFile] = useState<File | null>(null)
   const [extractionSuccess, setExtractionSuccess] = useState(false)
   const [extractionError, setExtractionError] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    if (file.size > 10 * 1024 * 1024) {
+  async function handleFile(f: File) {
+    if (f.size > 10 * 1024 * 1024) {
       setExtractionError('File is too large. Maximum size is 10 MB.')
       return
     }
 
+    setFile(f)
     setIsExtracting(true)
     setExtractionError(null)
     setExtractionSuccess(false)
 
     try {
       const formData = new FormData()
-      formData.append('file', file)
+      formData.append('file', f)
       const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData })
       if (!uploadRes.ok) throw new Error('Upload failed')
       const { data: { fileRef } } = await uploadRes.json()
@@ -125,14 +124,60 @@ export function Step1GeneralInfo({ isExtracting, setIsExtracting }: Step1General
       setExtractionSuccess(true)
     } catch {
       setExtractionError('Could not extract data from the PDF. Please fill in the fields manually.')
+      setFile(null)
     } finally {
       setIsExtracting(false)
-      if (fileInputRef.current) fileInputRef.current.value = ''
     }
+  }
+
+  function handleClear() {
+    setFile(null)
+    setExtractionSuccess(false)
+    setExtractionError(null)
+    setValue('declarationFileUrl', '')
   }
 
   return (
     <div className="flex flex-col gap-6">
+
+      {/* PDF Upload — primary action */}
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-1">
+          <p className="text-sm font-semibold">Auto-fill from PDF</p>
+          <p className="text-xs text-muted-foreground">
+            Upload the Teilungserklärung to populate all fields automatically.
+          </p>
+        </div>
+
+        <UploadZone
+          file={file}
+          isExtracting={isExtracting}
+          onFile={handleFile}
+          onClear={handleClear}
+        />
+
+        {extractionSuccess && (
+          <div className="flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-300">
+            <CheckCircle2 className="h-4 w-4 shrink-0" />
+            Data extracted — please review and adjust if needed
+          </div>
+        )}
+
+        {extractionError && (
+          <div className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            <X className="h-4 w-4 shrink-0" />
+            {extractionError}
+          </div>
+        )}
+      </div>
+
+      {/* Divider */}
+      <div className="flex items-center gap-3">
+        <div className="h-px flex-1 bg-border" />
+        <span className="text-xs text-muted-foreground">or fill in manually</span>
+        <div className="h-px flex-1 bg-border" />
+      </div>
+
       {/* Management type */}
       <Field>
         <FieldTitle>Management type</FieldTitle>
@@ -216,59 +261,6 @@ export function Step1GeneralInfo({ isExtracting, setIsExtracting }: Step1General
         {errors.accountantId && <FieldError errors={[errors.accountantId]} />}
       </Field>
 
-      {/* PDF Upload */}
-      <Field>
-        <FieldTitle>Teilungserklärung (optional)</FieldTitle>
-        <div className="relative">
-          <label
-            htmlFor="pdf-upload"
-            className={[
-              'flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-6 py-10 transition-colors cursor-pointer',
-              isExtracting
-                ? 'border-border bg-muted/30 cursor-not-allowed'
-                : 'border-border hover:border-primary/50 hover:bg-muted/20',
-            ].join(' ')}
-          >
-            {isExtracting ? (
-              <>
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">Extracting data from PDF…</p>
-              </>
-            ) : (
-              <>
-                <Upload className="h-8 w-8 text-muted-foreground" />
-                <div className="text-center">
-                  <p className="text-sm font-medium">Upload PDF to auto-fill</p>
-                  <p className="text-xs text-muted-foreground mt-1">PDF up to 10 MB</p>
-                </div>
-              </>
-            )}
-          </label>
-          <input
-            ref={fileInputRef}
-            id="pdf-upload"
-            type="file"
-            accept=".pdf"
-            disabled={isExtracting}
-            onChange={handleFileChange}
-            className="sr-only"
-          />
-        </div>
-
-        {extractionSuccess && (
-          <div className="flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-300">
-            <CheckCircle2 className="h-4 w-4 shrink-0" />
-            Data extracted — please review and adjust if needed
-          </div>
-        )}
-
-        {extractionError && (
-          <div className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-            <X className="h-4 w-4 shrink-0" />
-            {extractionError}
-          </div>
-        )}
-      </Field>
     </div>
   )
 }
