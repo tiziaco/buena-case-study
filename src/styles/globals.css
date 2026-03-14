@@ -74,7 +74,7 @@
   --chart-3: oklch(0.65 0.12 55);           /* amber */
   --chart-4: oklch(0.60 0.08 85);           /* warm olive */
   --chart-5: oklch(0.55 0.05 70);           /* stone */
-  --radius: 0.625rem;
+  --radius: 0.5rem;
   --sidebar: oklch(0.96 0.008 70);
   --sidebar-foreground: oklch(0.16 0.018 55);
   --sidebar-primary: oklch(0.72 0.19 47);
