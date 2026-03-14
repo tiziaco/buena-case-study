@@ -47,6 +47,11 @@ function mapExtractionToForm(extraction: ExtractionResult): Partial<CreateProper
     }
   })
 
+  // Guard: if AI returned no buildings, skip unit mapping to avoid undefined access
+  if (!buildings.length) {
+    return { name: extraction.property.name, type: extraction.property.type, buildings: [], units: [] }
+  }
+
   return {
     name: extraction.property.name,
     type: extraction.property.type,
