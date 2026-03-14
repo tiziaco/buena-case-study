@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
@@ -47,6 +47,15 @@ export function PropertyCreationWizard() {
   const [isExtracting, setIsExtracting] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+
+  const mountedRef = useRef(true)
+  useEffect(() => {
+    return () => { mountedRef.current = false }
+  }, [])
+
+  const safeSetIsExtracting = (v: boolean) => {
+    if (mountedRef.current) setIsExtracting(v)
+  }
 
   async function handleNext() {
     let valid = false
@@ -111,7 +120,7 @@ export function PropertyCreationWizard() {
           {step === 1 && (
             <Step1GeneralInfo
               isExtracting={isExtracting}
-              setIsExtracting={setIsExtracting}
+              setIsExtracting={safeSetIsExtracting}
             />
           )}
           {step === 2 && <Step2Buildings />}
