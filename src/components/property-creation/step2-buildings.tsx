@@ -81,7 +81,7 @@ export function Step2Buildings() {
                   placeholder="e.g. Musterstraße"
                 />
                 {errors.buildings?.[index]?.street && (
-                  <FieldError errors={[errors.buildings[index].street]} />
+                  <FieldError errors={[errors.buildings?.[index]?.street]} />
                 )}
               </Field>
               <Field>
@@ -92,7 +92,7 @@ export function Step2Buildings() {
                   className="w-24"
                 />
                 {errors.buildings?.[index]?.houseNumber && (
-                  <FieldError errors={[errors.buildings[index].houseNumber]} />
+                  <FieldError errors={[errors.buildings?.[index]?.houseNumber]} />
                 )}
               </Field>
             </div>
@@ -107,7 +107,7 @@ export function Step2Buildings() {
                   className="w-32"
                 />
                 {errors.buildings?.[index]?.postalCode && (
-                  <FieldError errors={[errors.buildings[index].postalCode]} />
+                  <FieldError errors={[errors.buildings?.[index]?.postalCode]} />
                 )}
               </Field>
               <Field>
@@ -117,7 +117,7 @@ export function Step2Buildings() {
                   placeholder="e.g. München"
                 />
                 {errors.buildings?.[index]?.city && (
-                  <FieldError errors={[errors.buildings[index].city]} />
+                  <FieldError errors={[errors.buildings?.[index]?.city]} />
                 )}
               </Field>
             </div>
@@ -130,7 +130,7 @@ export function Step2Buildings() {
                 placeholder="Germany"
               />
               {errors.buildings?.[index]?.country && (
-                <FieldError errors={[errors.buildings[index].country]} />
+                <FieldError errors={[errors.buildings?.[index]?.country]} />
               )}
             </Field>
           </CardContent>
