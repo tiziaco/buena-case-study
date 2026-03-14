@@ -7,7 +7,7 @@ export default function HubLayout({ children }: { children: React.ReactNode }) {
     <SidebarProvider className="h-svh overflow-hidden">
       <AppSidebar items={HUB_NAV} variant="inset" />
       <SidebarInset className="flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="px-2 py-2 min-w-0">
             {children}
           </div>
