@@ -5,7 +5,7 @@ import { useFormContext, Controller } from 'react-hook-form'
 import { Upload, X, CheckCircle2, Loader2 } from 'lucide-react'
 
 import type { CreatePropertyFormValues } from '@/lib/validators/property'
-import type { ExtractionResult } from '@/app/api/extract/route'
+import type { ExtractionResult } from '@/lib/validators/extraction'
 import type { UnitType } from '@/generated/prisma/enums'
 import { useUsers } from '@/hooks/use-users'
 import { Input } from '@/components/ui/input'
