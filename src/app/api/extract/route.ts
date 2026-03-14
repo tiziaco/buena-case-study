@@ -25,12 +25,12 @@ const ExtractionSchema = z.object({
       number: z.string(),
       type: z.string(),
       building: z.string(),
-      floor: z.number().int().optional(),
-      entrance: z.string().optional(),
-      size: z.number().optional(),
-      co_ownership_share: z.number().optional(),
-      construction_year: z.number().int().optional(),
-      rooms: z.number().optional(),
+      floor: z.number().int().nullable(),
+      entrance: z.string().nullable(),
+      size: z.number().nullable(),
+      co_ownership_share: z.number().nullable(),
+      construction_year: z.number().int().nullable(),
+      rooms: z.number().nullable(),
     }),
   ),
 })
@@ -55,7 +55,7 @@ Return the following fields:
 
 Rules:
 - Do NOT infer or fabricate values
-- Omit optional fields entirely if not found in the document
+- Set optional fields to null if not found in the document
 - For Parking units that share a group entry, create one entry per parking space`
 
 export async function POST(req: Request): Promise<Response> {
