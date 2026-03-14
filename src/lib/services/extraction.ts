@@ -50,5 +50,8 @@ export async function extractFromPdf(fileRef: string): Promise<ExtractionResult>
     output: Output.object({ schema: ExtractionSchema }),
   })
 
+  if (result.output == null) {
+    throw new Error('AI model returned no structured output')
+  }
   return result.output
 }
