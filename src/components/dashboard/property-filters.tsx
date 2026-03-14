@@ -41,7 +41,7 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
     <div className="flex flex-wrap gap-4">
       {/* Type */}
       <div className="flex flex-col gap-1.5">
-        <span className="text-xs font-medium text-muted-foreground">Type</span>
+        <span className="text-sm font-medium text-muted-foreground">Type</span>
         <ToggleGroup
           variant="outline"
           value={typeValue}
@@ -57,9 +57,9 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
 
       {/* Manager */}
       <div className="flex flex-col gap-1.5">
-        <span className="text-xs font-medium text-muted-foreground">Manager</span>
+        <span className="text-sm font-medium text-muted-foreground">Manager</span>
         {usersLoading ? (
-          <div className="bg-input/30 border-input h-8 w-40 animate-pulse rounded-4xl border" />
+          <div className="bg-input/30 border-input h-8 w-40 animate-pulse rounded-lg border" />
         ) : (
           <Select
             value={managerSelectValue}
@@ -88,7 +88,7 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
 
       {/* Surface */}
       <div className="flex flex-col gap-1.5">
-        <span className="text-xs font-medium text-muted-foreground">Surface</span>
+        <span className="text-sm font-medium text-muted-foreground">Surface</span>
         <div className="flex items-center gap-1.5">
           <Input
             type="number"
@@ -112,7 +112,7 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
 
       {/* Year */}
       <div className="flex flex-col gap-1.5">
-        <span className="text-xs font-medium text-muted-foreground">Year</span>
+        <span className="text-sm font-medium text-muted-foreground">Year</span>
         <div className="flex items-center gap-1.5">
           <Input
             type="number"

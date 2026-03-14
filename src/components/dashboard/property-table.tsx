@@ -45,7 +45,7 @@ export function PropertyTable({ filters }: PropertyTableProps) {
 
   if (isError) {
     return (
-      <div className="rounded-md border">
+      <div className="rounded-lg border">
         <div className="flex flex-col items-center justify-center py-12 gap-2">
           <p className="text-sm font-medium">Could not load properties</p>
           <p className="text-sm text-muted-foreground">An error occurred. Please try again.</p>
@@ -58,7 +58,7 @@ export function PropertyTable({ filters }: PropertyTableProps) {
 
   return (
     <>
-      <div className="rounded-md border">
+      <div className="rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
