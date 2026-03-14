@@ -10,6 +10,9 @@ export const CreatePropertySchema = z.object({
   declarationFileUrl: z.string().optional(),
   buildings: z.array(CreateBuildingSchema.extend({ clientId: z.uuid() })).min(1),
   units: z.array(CreateUnitSchema),
+}).refine(data => data.managerId !== data.accountantId, {
+  message: 'Manager and accountant must be different people',
+  path: ['accountantId'],
 })
 
 export const UpdatePropertySchema = z.object({
