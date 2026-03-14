@@ -4,7 +4,7 @@ import { HUB_NAV } from "@/lib/hub-nav";
 
 export default function HubLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
+    <SidebarProvider className="h-svh overflow-hidden">
       <AppSidebar items={HUB_NAV} variant="inset" />
       <SidebarInset className="flex flex-col overflow-hidden">
         <div className="flex-1 overflow-auto">
