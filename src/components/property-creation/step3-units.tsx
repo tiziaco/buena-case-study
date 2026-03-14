@@ -49,11 +49,19 @@ export function Step3Units() {
   }
 
   function handleAppendRow(buildingClientId: string) {
-    append(newUnit(buildingClientId))
+    // Find the last index in the fields array that belongs to this building
+    let insertAt = fields.length
+    for (let i = fields.length - 1; i >= 0; i--) {
+      if (fields[i].buildingClientId === buildingClientId) {
+        insertAt = i + 1
+        break
+      }
+    }
+    insert(insertAt, newUnit(buildingClientId))
     setTimeout(() => {
       const rows = document.querySelectorAll('tr[data-unit-row]')
-      const lastRow = rows[rows.length - 1]
-      const firstInput = lastRow?.querySelector('input')
+      const targetRow = rows[insertAt]
+      const firstInput = targetRow?.querySelector('input')
       if (firstInput instanceof HTMLElement) firstInput.focus()
     }, 50)
   }
@@ -67,8 +75,8 @@ export function Step3Units() {
       ) : (
         <div className="overflow-x-auto rounded-2xl border">
           <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-muted/50 sticky top-0 z-10">
+            <thead className="sticky top-0 z-10">
+              <tr className="border-b bg-muted/50">
                 <th className="px-2 py-2 text-left font-medium text-muted-foreground whitespace-nowrap">Unit no.</th>
                 <th className="px-2 py-2 text-left font-medium text-muted-foreground whitespace-nowrap">Type</th>
                 <th className="px-2 py-2 text-left font-medium text-muted-foreground whitespace-nowrap">Floor</th>
