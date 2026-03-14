@@ -32,6 +32,10 @@ function mapExtractionToForm(extraction: ExtractionResult): Partial<CreateProper
     country: b.country ?? 'Germany',
   }))
 
+  if (!buildings.length) {
+    return { name: extraction.property.name, type: extraction.property.type, buildings: [], units: [] }
+  }
+
   const units = extraction.units.map((u) => {
     const building = buildings.find((b) => b.name === u.building) ?? buildings[0]
     return {
@@ -46,11 +50,6 @@ function mapExtractionToForm(extraction: ExtractionResult): Partial<CreateProper
       rooms: u.rooms != null && u.rooms > 0 ? u.rooms : undefined,
     }
   })
-
-  // Guard: if AI returned no buildings, skip unit mapping to avoid undefined access
-  if (!buildings.length) {
-    return { name: extraction.property.name, type: extraction.property.type, buildings: [], units: [] }
-  }
 
   return {
     name: extraction.property.name,
