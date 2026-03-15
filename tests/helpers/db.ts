@@ -16,8 +16,6 @@ export async function cleanDatabase(prisma: TestPrismaClient) {
   await prisma.$transaction(async (tx) => {
     await tx.unit.deleteMany()
     await tx.building.deleteMany()
-    await tx.propertyStaff.deleteMany()
     await tx.property.deleteMany()
-    await tx.user.deleteMany()
   })
 }

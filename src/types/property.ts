@@ -1,8 +1,7 @@
-import type { PropertyType, StaffRole } from '@/generated/prisma/client'
+import type { PropertyType } from '@/generated/prisma/client'
 
 export type PropertyFilters = {
   type?: string
-  managerId?: string
   sizeMin?: string
   sizeMax?: string
   yearMin?: string
@@ -15,10 +14,8 @@ export type PropertySummary = {
   type: PropertyType
   propertyNumber: string
   createdAt: string
-  staff: {
-    manager: { id: string; name: string } | null
-    accountant: { id: string; name: string } | null
-  }
+  managerName: string | null
+  accountantName: string | null
 }
 
 export type PropertyDetail = {
@@ -27,6 +24,8 @@ export type PropertyDetail = {
   type: PropertyType
   propertyNumber: string
   declarationFileUrl: string | null
+  managerName: string | null
+  accountantName: string | null
   createdAt: string
   updatedAt: string
   buildings: Array<{
@@ -51,10 +50,5 @@ export type PropertyDetail = {
       createdAt: string
       updatedAt: string
     }>
-  }>
-  staff: Array<{
-    id: string
-    role: StaffRole
-    user: { id: string; name: string; email: string }
   }>
 }
