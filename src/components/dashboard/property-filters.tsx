@@ -1,25 +1,24 @@
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface PropertyFiltersProps {
   filters: {
     type?: string
-    sizeMin?: string
-    sizeMax?: string
-    yearMin?: string
-    yearMax?: string
+    city?: string
+    managerName?: string
   }
+  cityOptions: string[]
+  managerOptions: string[]
   onChange: (filters: PropertyFiltersProps['filters']) => void
 }
 
-export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
+export function PropertyFilters({ filters, cityOptions, managerOptions, onChange }: PropertyFiltersProps) {
   function merge(patch: Partial<PropertyFiltersProps['filters']>) {
     onChange({ ...filters, ...patch })
   }
 
   const hasActiveFilters = Object.values(filters).some(Boolean)
-
   const typeValue: string[] = filters.type ? [filters.type] : ['all']
 
   return (
@@ -40,54 +39,42 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
         </ToggleGroup>
       </div>
 
-      {/* Surface */}
+      {/* City */}
       <div className="flex flex-col gap-1.5">
-        <span className="text-sm font-medium text-muted-foreground">Surface</span>
-        <div className="flex items-center gap-1.5">
-          <Input
-            type="number"
-            min={0}
-            placeholder="Min"
-            value={filters.sizeMin ?? ''}
-            onChange={(e) => merge({ sizeMin: e.target.value })}
-            className="w-24"
-          />
-          <span className="text-muted-foreground text-xs">–</span>
-          <Input
-            type="number"
-            min={0}
-            placeholder="Max"
-            value={filters.sizeMax ?? ''}
-            onChange={(e) => merge({ sizeMax: e.target.value })}
-            className="w-24"
-          />
-        </div>
+        <span className="text-sm font-medium text-muted-foreground">City</span>
+        <Select
+          value={filters.city ?? ''}
+          onValueChange={(val) => merge({ city: val || undefined })}
+        >
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="All cities" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All cities</SelectItem>
+            {cityOptions.map((city) => (
+              <SelectItem key={city} value={city}>{city}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* Year */}
+      {/* Manager */}
       <div className="flex flex-col gap-1.5">
-        <span className="text-sm font-medium text-muted-foreground">Year</span>
-        <div className="flex items-center gap-1.5">
-          <Input
-            type="number"
-            min={1800}
-            max={2100}
-            placeholder="From"
-            value={filters.yearMin ?? ''}
-            onChange={(e) => merge({ yearMin: e.target.value })}
-            className="w-24"
-          />
-          <span className="text-muted-foreground text-xs">–</span>
-          <Input
-            type="number"
-            min={1800}
-            max={2100}
-            placeholder="To"
-            value={filters.yearMax ?? ''}
-            onChange={(e) => merge({ yearMax: e.target.value })}
-            className="w-24"
-          />
-        </div>
+        <span className="text-sm font-medium text-muted-foreground">Manager</span>
+        <Select
+          value={filters.managerName ?? ''}
+          onValueChange={(val) => merge({ managerName: val || undefined })}
+        >
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="All managers" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All managers</SelectItem>
+            {managerOptions.map((manager) => (
+              <SelectItem key={manager} value={manager}>{manager}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Clear filters */}

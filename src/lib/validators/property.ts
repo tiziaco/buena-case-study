@@ -5,8 +5,8 @@ import { CreateUnitSchema } from './unit'
 export const CreatePropertySchema = z.object({
   name: z.string().min(1, 'Property name is required'),
   type: z.enum(['WEG', 'MV'], { error: 'Please select a management type' }),
-  managerName: z.string().optional(),
-  accountantName: z.string().optional(),
+  managerName: z.string().min(1, 'Manager name is required'),
+  accountantName: z.string().min(1, 'Accountant name is required'),
   declarationFileUrl: z.string().optional(),
   buildings: z.array(CreateBuildingSchema.extend({ clientId: z.uuid() })).min(1, 'At least one building is required'),
   units: z.array(CreateUnitSchema),

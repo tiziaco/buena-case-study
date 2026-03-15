@@ -7,15 +7,11 @@ import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PropertyFilters } from '@/components/dashboard/property-filters'
 import { PropertyTable } from '@/components/dashboard/property-table'
+import { useProperties } from '@/hooks/use-properties'
+import type { PropertyFilters as PropertyFiltersType } from '@/types/property'
 
 interface DashboardClientProps {
-  initialFilters: {
-    type?: string
-    sizeMin?: string
-    sizeMax?: string
-    yearMin?: string
-    yearMax?: string
-  }
+  initialFilters: PropertyFiltersType
 }
 
 export function DashboardClient({ initialFilters }: DashboardClientProps) {
@@ -24,12 +20,18 @@ export function DashboardClient({ initialFilters }: DashboardClientProps) {
 
   const [filters, setFilters] = useState(initialFilters)
 
-  function handleFilterChange(newFilters: typeof filters) {
+  const { data: allProperties = [] } = useProperties({})
+  const cityOptions = [...new Set(allProperties.flatMap((p) => p.cities))].sort()
+  const managerOptions = [...new Set(
+    allProperties.map((p) => p.managerName).filter((m): m is string => !!m)
+  )].sort()
+
+  function handleFilterChange(newFilters: PropertyFiltersType) {
     setFilters(newFilters)
 
     const params = new URLSearchParams(searchParams.toString())
 
-    const keys = ['type', 'sizeMin', 'sizeMax', 'yearMin', 'yearMax'] as const
+    const keys = ['type', 'city', 'managerName'] as const
 
     for (const key of keys) {
       const value = newFilters[key]
@@ -53,7 +55,12 @@ export function DashboardClient({ initialFilters }: DashboardClientProps) {
         </Button>
       </div>
 
-      <PropertyFilters filters={filters} onChange={handleFilterChange} />
+      <PropertyFilters
+        filters={filters}
+        onChange={handleFilterChange}
+        cityOptions={cityOptions}
+        managerOptions={managerOptions}
+      />
 
       <div className="mt-4">
         <PropertyTable filters={filters} />
