@@ -1,14 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useFormContext, Controller } from 'react-hook-form'
 import { CheckCircle2, X } from 'lucide-react'
 
 import type { CreatePropertyFormValues } from '@/lib/validators/property'
-import type { ExtractionResult } from '@/lib/validators/extraction'
-import type { UnitType } from '@/generated/prisma/enums'
 import { useUsers } from '@/hooks/use-users'
-import { useExtractFromPdf } from '@/hooks/use-extract-from-pdf'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -21,53 +18,14 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Field, FieldTitle, FieldError } from '@/components/ui/field'
 import { UploadZone } from './upload-zone'
 
-// ─── Extraction helper ────────────────────────────────────────────────────────
-
-function mapExtractionToForm(extraction: ExtractionResult): Partial<CreatePropertyFormValues> {
-  const buildings = extraction.buildings.map((b) => ({
-    clientId: crypto.randomUUID(),
-    name: b.name ?? undefined,
-    street: b.street,
-    houseNumber: b.house_number,
-    postalCode: b.postal_code,
-    city: b.city,
-    country: b.country ?? 'Germany',
-  }))
-
-  if (!buildings.length) {
-    return { name: extraction.property.name, type: extraction.property.type, buildings: [], units: [] }
-  }
-
-  const units = extraction.units.map((u) => {
-    const building = buildings.find((b) => b.name === u.building) ?? buildings[0]
-    return {
-      buildingClientId: building.clientId,
-      unitNumber: u.number,
-      type: u.type.toUpperCase() as UnitType,
-      floor: u.floor ?? undefined,
-      size: u.size != null && u.size > 0 ? u.size : undefined,
-      entrance: u.entrance ?? undefined,
-      coOwnershipShare: u.co_ownership_share != null && u.co_ownership_share > 0 ? u.co_ownership_share : undefined,
-      constructionYear: u.construction_year ?? undefined,
-      rooms: u.rooms != null && u.rooms > 0 ? u.rooms : undefined,
-    }
-  })
-
-  return {
-    name: extraction.property.name,
-    type: extraction.property.type,
-    buildings,
-    units,
-  }
-}
-
-// ─── Component ────────────────────────────────────────────────────────────────
-
 interface Step1GeneralInfoProps {
-  onPendingChange: (isPending: boolean) => void
+  onFile: (file: File) => void
+  isExtracting: boolean
+  extractionSuccess: boolean
+  extractionError: string | undefined
 }
 
-export function Step1GeneralInfo({ onPendingChange }: Step1GeneralInfoProps) {
+export function Step1GeneralInfo({ onFile, isExtracting, extractionSuccess, extractionError }: Step1GeneralInfoProps) {
   const {
     register,
     control,
@@ -86,25 +44,9 @@ export function Step1GeneralInfo({ onPendingChange }: Step1GeneralInfoProps) {
 
   const [file, setFile] = useState<File | null>(null)
 
-  const { mutate: extract, isPending: isExtracting, isSuccess: extractionSuccess, isError: hasExtractionError, error: extractionError } = useExtractFromPdf(
-    ({ extraction, fileRef }) => {
-      const mapped = mapExtractionToForm(extraction)
-      if (mapped.name) setValue('name', mapped.name)
-      if (mapped.type) setValue('type', mapped.type)
-      if (mapped.buildings) setValue('buildings', mapped.buildings)
-      if (mapped.units) setValue('units', mapped.units)
-      setValue('declarationFileUrl', fileRef)
-    },
-    () => setFile(null),
-  )
-
-  useEffect(() => {
-    onPendingChange(isExtracting)
-  }, [isExtracting, onPendingChange])
-
   function handleFile(f: File) {
     setFile(f)
-    extract(f)
+    onFile(f)
   }
 
   function handleClear() {
@@ -138,10 +80,10 @@ export function Step1GeneralInfo({ onPendingChange }: Step1GeneralInfoProps) {
           </div>
         )}
 
-        {hasExtractionError && (
+        {extractionError && (
           <div className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             <X className="h-4 w-4 shrink-0" />
-            {extractionError?.message}
+            {extractionError}
           </div>
         )}
       </div>

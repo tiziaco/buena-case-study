@@ -6,12 +6,48 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
 
 import { CreatePropertySchema, type CreatePropertyInput, type CreatePropertyFormValues } from '@/lib/validators/property'
+import type { ExtractionResult } from '@/lib/validators/extraction'
+import type { UnitType } from '@/generated/prisma/enums'
 import { Button } from '@/components/ui/button'
 import { useCreateProperty } from '@/hooks/use-properties'
+import { useExtractFromPdf } from '@/hooks/use-extract-from-pdf'
 import { StepIndicator } from './step-indicator'
 import { Step1GeneralInfo } from './step1-general-info'
 import { Step2Buildings } from './step2-buildings'
 import { Step3Units } from './step3-units'
+
+function mapExtractionToForm(extraction: ExtractionResult): Partial<CreatePropertyFormValues> {
+  const buildings = extraction.buildings.map((b) => ({
+    clientId: crypto.randomUUID(),
+    name: b.name ?? undefined,
+    street: b.street,
+    houseNumber: b.house_number,
+    postalCode: b.postal_code,
+    city: b.city,
+    country: b.country ?? 'Germany',
+  }))
+
+  if (!buildings.length) {
+    return { name: extraction.property.name, type: extraction.property.type, buildings: [], units: [] }
+  }
+
+  const units = extraction.units.map((u) => {
+    const building = buildings.find((b) => b.name === u.building) ?? buildings[0]
+    return {
+      buildingClientId: building.clientId,
+      unitNumber: u.number,
+      type: u.type.toUpperCase() as UnitType,
+      floor: u.floor ?? undefined,
+      size: u.size != null && u.size > 0 ? u.size : undefined,
+      entrance: u.entrance ?? undefined,
+      coOwnershipShare: u.co_ownership_share != null && u.co_ownership_share > 0 ? u.co_ownership_share : undefined,
+      constructionYear: u.construction_year ?? undefined,
+      rooms: u.rooms != null && u.rooms > 0 ? u.rooms : undefined,
+    }
+  })
+
+  return { name: extraction.property.name, type: extraction.property.type, buildings, units }
+}
 
 function newBuilding() {
   return {
@@ -41,9 +77,23 @@ export function PropertyCreationWizard() {
     },
   })
 
+  const {
+    mutate: extract,
+    isPending: isExtracting,
+    isSuccess: extractionSuccess,
+    isError: hasExtractionError,
+    error: extractionError,
+  } = useExtractFromPdf(({ extraction, fileRef }) => {
+    const mapped = mapExtractionToForm(extraction)
+    if (mapped.name) form.setValue('name', mapped.name)
+    if (mapped.type) form.setValue('type', mapped.type)
+    if (mapped.buildings) form.setValue('buildings', mapped.buildings)
+    if (mapped.units) form.setValue('units', mapped.units)
+    form.setValue('declarationFileUrl', fileRef)
+  })
+
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [highestStepReached, setHighestStepReached] = useState<1 | 2 | 3>(1)
-  const [isExtracting, setIsExtracting] = useState(false)
 
   async function handleNext() {
     let valid = false
@@ -88,7 +138,12 @@ export function PropertyCreationWizard() {
 
         <div className="flex flex-col gap-6">
           {step === 1 && (
-            <Step1GeneralInfo onPendingChange={setIsExtracting} />
+            <Step1GeneralInfo
+              onFile={extract}
+              isExtracting={isExtracting}
+              extractionSuccess={extractionSuccess}
+              extractionError={hasExtractionError ? extractionError?.message : undefined}
+            />
           )}
           {step === 2 && <Step2Buildings />}
           {step === 3 && <Step3Units />}
