@@ -2,6 +2,8 @@
 
 A property management dashboard built as part of the Buena Case Study. Allows property managers to digitize physical buildings into structured digital objects through a guided 3-step creation flow.
 
+Watch the [product walkthrough](https://www.loom.com/share/0f0b24f36d2d4c9d88a50193a4a1efe8) for a brief overview.
+
 The original assignment brief is available in [`docs/PRD.md`](./docs/PRD.md).
 
 ## Key Design Decisions
