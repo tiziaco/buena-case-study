@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useFormContext, Controller } from 'react-hook-form'
 import { CheckCircle2, X } from 'lucide-react'
 
@@ -8,6 +8,7 @@ import type { CreatePropertyFormValues } from '@/lib/validators/property'
 import type { ExtractionResult } from '@/lib/validators/extraction'
 import type { UnitType } from '@/generated/prisma/enums'
 import { useUsers } from '@/hooks/use-users'
+import { useExtractFromPdf } from '@/hooks/use-extract-from-pdf'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -63,11 +64,10 @@ function mapExtractionToForm(extraction: ExtractionResult): Partial<CreateProper
 // ─── Component ────────────────────────────────────────────────────────────────
 
 interface Step1GeneralInfoProps {
-  isExtracting: boolean
-  setIsExtracting: (v: boolean) => void
+  onPendingChange: (isPending: boolean) => void
 }
 
-export function Step1GeneralInfo({ isExtracting, setIsExtracting }: Step1GeneralInfoProps) {
+export function Step1GeneralInfo({ onPendingChange }: Step1GeneralInfoProps) {
   const {
     register,
     control,
@@ -85,55 +85,30 @@ export function Step1GeneralInfo({ isExtracting, setIsExtracting }: Step1General
   const accountantOptions = users.filter((u) => u.id !== watchedManagerId)
 
   const [file, setFile] = useState<File | null>(null)
-  const [extractionSuccess, setExtractionSuccess] = useState(false)
-  const [extractionError, setExtractionError] = useState<string | null>(null)
 
-  async function handleFile(f: File) {
-    if (f.size > 10 * 1024 * 1024) {
-      setExtractionError('File is too large. Maximum size is 10 MB.')
-      return
-    }
-
-    setFile(f)
-    setIsExtracting(true)
-    setExtractionError(null)
-    setExtractionSuccess(false)
-
-    try {
-      const formData = new FormData()
-      formData.append('file', f)
-      const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData })
-      if (!uploadRes.ok) throw new Error('Upload failed')
-      const { data: { fileRef } } = await uploadRes.json()
-
-      const extractRes = await fetch('/api/extract', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileRef }),
-      })
-      if (!extractRes.ok) throw new Error('Extraction failed')
-      const { data: extraction } = await extractRes.json() as { data: ExtractionResult }
-
+  const { mutate: extract, isPending: isExtracting, isSuccess: extractionSuccess, isError: hasExtractionError, error: extractionError } = useExtractFromPdf(
+    ({ extraction, fileRef }) => {
       const mapped = mapExtractionToForm(extraction)
       if (mapped.name) setValue('name', mapped.name)
       if (mapped.type) setValue('type', mapped.type)
       if (mapped.buildings) setValue('buildings', mapped.buildings)
       if (mapped.units) setValue('units', mapped.units)
       setValue('declarationFileUrl', fileRef)
+    },
+    () => setFile(null),
+  )
 
-      setExtractionSuccess(true)
-    } catch {
-      setExtractionError('Could not extract data from the PDF. Please fill in the fields manually.')
-      setFile(null)
-    } finally {
-      setIsExtracting(false)
-    }
+  useEffect(() => {
+    onPendingChange(isExtracting)
+  }, [isExtracting, onPendingChange])
+
+  function handleFile(f: File) {
+    setFile(f)
+    extract(f)
   }
 
   function handleClear() {
     setFile(null)
-    setExtractionSuccess(false)
-    setExtractionError(null)
     setValue('declarationFileUrl', '')
   }
 
@@ -163,10 +138,10 @@ export function Step1GeneralInfo({ isExtracting, setIsExtracting }: Step1General
           </div>
         )}
 
-        {extractionError && (
+        {hasExtractionError && (
           <div className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             <X className="h-4 w-4 shrink-0" />
-            {extractionError}
+            {extractionError?.message}
           </div>
         )}
       </div>

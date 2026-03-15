@@ -88,10 +88,7 @@ export function PropertyCreationWizard() {
 
         <div className="flex flex-col gap-6">
           {step === 1 && (
-            <Step1GeneralInfo
-              isExtracting={isExtracting}
-              setIsExtracting={setIsExtracting}
-            />
+            <Step1GeneralInfo onPendingChange={setIsExtracting} />
           )}
           {step === 2 && <Step2Buildings />}
           {step === 3 && <Step3Units />}
