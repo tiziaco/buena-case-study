@@ -61,8 +61,7 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./
 
 # Copy the already-generated Prisma client — no need to regenerate
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/src/generated/prisma ./src/generated/prisma
 
 # Copy Prisma CLI + tsx for entrypoint (migrate deploy + db seed)
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
