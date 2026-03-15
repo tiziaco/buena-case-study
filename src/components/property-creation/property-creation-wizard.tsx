@@ -3,12 +3,11 @@
 import { useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 
 import { CreatePropertySchema, type CreatePropertyInput, type CreatePropertyFormValues } from '@/lib/validators/property'
 import { Button } from '@/components/ui/button'
+import { useCreateProperty } from '@/hooks/use-properties'
 import { StepIndicator } from './step-indicator'
 import { Step1GeneralInfo } from './step1-general-info'
 import { Step2Buildings } from './step2-buildings'
@@ -27,7 +26,7 @@ function newBuilding() {
 }
 
 export function PropertyCreationWizard() {
-  const router = useRouter()
+  const { mutate, isPending: isSubmitting, isError: hasSubmitError } = useCreateProperty()
 
   const form = useForm<CreatePropertyFormValues, unknown, CreatePropertyInput>({
     resolver: zodResolver(CreatePropertySchema),
@@ -45,8 +44,6 @@ export function PropertyCreationWizard() {
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [highestStepReached, setHighestStepReached] = useState<1 | 2 | 3>(1)
   const [isExtracting, setIsExtracting] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitError, setSubmitError] = useState<string | null>(null)
 
   async function handleNext() {
     let valid = false
@@ -71,27 +68,7 @@ export function PropertyCreationWizard() {
   async function handleSubmit() {
     const valid = await form.trigger()
     if (!valid) return
-
-    setIsSubmitting(true)
-    setSubmitError(null)
-
-    try {
-      const res = await fetch('/api/properties', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form.getValues()),
-      })
-
-      if (res.status !== 201) throw new Error('Failed to create property')
-
-      toast.success('Property created')
-      router.push('/dashboard')
-    } catch {
-      toast.error('Failed to create property')
-      setSubmitError('Failed to create property. Please try again.')
-    } finally {
-      setIsSubmitting(false)
-    }
+    mutate(form.getValues() as CreatePropertyInput)
   }
 
   const isDisabled = isExtracting || isSubmitting
@@ -120,8 +97,8 @@ export function PropertyCreationWizard() {
           {step === 3 && <Step3Units />}
         </div>
 
-        {submitError && (
-          <p className="text-sm text-destructive">{submitError}</p>
+        {hasSubmitError && (
+          <p className="text-sm text-destructive">Failed to create property. Please try again.</p>
         )}
 
         <div className="sticky bottom-0 -mx-4 flex items-center justify-between border-t border-border/40 bg-background/80 px-4 pt-2 backdrop-blur-sm">

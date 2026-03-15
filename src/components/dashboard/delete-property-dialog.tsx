@@ -1,7 +1,5 @@
 'use client'
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,6 +11,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { buttonVariants } from '@/components/ui/button'
+import { useDeleteProperty } from '@/hooks/use-properties'
 
 interface DeletePropertyDialogProps {
   propertyId: string
@@ -21,30 +20,13 @@ interface DeletePropertyDialogProps {
   onOpenChange: (open: boolean) => void
 }
 
-async function deleteProperty(id: string): Promise<void> {
-  const res = await fetch(`/api/properties/${id}`, { method: 'DELETE' })
-  if (!res.ok && res.status !== 204) throw new Error('Failed to delete property')
-}
-
 export function DeletePropertyDialog({
   propertyId,
   propertyName,
   open,
   onOpenChange,
 }: DeletePropertyDialogProps) {
-  const queryClient = useQueryClient()
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: () => deleteProperty(propertyId),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['properties'] })
-      toast.success(`"${propertyName}" has been deleted`)
-      onOpenChange(false)
-    },
-    onError: () => {
-      toast.error('Failed to delete property. Please try again.')
-    },
-  })
+  const { mutate, isPending } = useDeleteProperty(propertyName, () => onOpenChange(false))
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -60,7 +42,7 @@ export function DeletePropertyDialog({
           <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             className={buttonVariants({ variant: 'destructive' })}
-            onClick={() => mutate()}
+            onClick={() => mutate(propertyId)}
             disabled={isPending}
           >
             {isPending ? 'Deleting…' : 'Delete'}
