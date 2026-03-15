@@ -316,7 +316,7 @@ unit.integration.test.ts
 - `BulkCreateUnitSchema`: new schema wrapping `z.array(CreateUnitSchema)` (used by bulk POST /api/units)
 
 **Service updates:**
-- `createProperty` now returns `PropertySummary` (with `staff.manager` / `staff.accountant` names) instead of raw `Property`
+- `createProperty` now returns `PropertySummary` (with `managerName` / `accountantName`) instead of raw `Property`
 
 **API utilities (`src/lib/api/response.ts`):**
 - `apiError` fixed to omit `details` key when not provided
@@ -351,7 +351,7 @@ src/app/api/
 **Properties**
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/api/properties` | List properties; supports `type`, `managerId`, `sizeMin`, `sizeMax`, `yearMin`, `yearMax` query params |
+| GET | `/api/properties` | List properties; supports `type`, `sizeMin`, `sizeMax`, `yearMin`, `yearMax` query params |
 | POST | `/api/properties` | Create property + buildings + units + staff (transaction); returns `PropertySummary` |
 | GET | `/api/properties/:id` | Full detail with buildings, units (Decimal serialized), staff |
 | PATCH | `/api/properties/:id` | Update general info |
