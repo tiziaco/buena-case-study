@@ -11,45 +11,25 @@ Build a Property Dashboard with a guided 3-step property creation flow. The app 
 
 
 **Key design decisions:**
-- `User` is a plain entity — no auth, no password. Seeded with realistic sample data.
-- `PropertyStaff` is a join table that assigns a `User` to a `Property` with a specific role. A user can be a manager on one property and an accountant on another.
-- The `@@unique([propertyId, role])` constraint enforces exactly one manager and one accountant per property at the DB level.
+- Manager and accountant are stored as plain text fields (`managerName`, `accountantName`) on `Property`, pre-filled by AI extraction when found in the PDF.
 
 ---
 
 ## 2. Data Model
 
 ```
-User
-  id          UUID PK
-  name        String
-  email       String UNIQUE
-  createdAt   DateTime
-  updatedAt   DateTime
-
-  relations:
-    staffAssignments → PropertyStaff[]
-
-PropertyStaff                         ← join table: user ↔ property with role
-  id          UUID PK
-  propertyId  UUID FK → Property
-  userId      UUID FK → User
-  role        Enum (MANAGER | ACCOUNTANT)
-  createdAt   DateTime
-
-  @@unique([propertyId, role])         ← one manager and one accountant per property
-
 Property
   id                  UUID PK
   name                String
   type                Enum (WEG | MV)
   propertyNumber      String UNIQUE (auto-generated: PROP-{YEAR}-{00001})
+  managerName         String?
+  accountantName      String?
   declarationFileUrl  String?
   createdAt           DateTime
   updatedAt           DateTime
 
   relations:
-    staff     → PropertyStaff[]
     buildings → Building[]
 
 Building
@@ -124,14 +104,9 @@ npx prisma migrate dev --name init
 Pre-populate the following so the frontend has real data to work with from day one:
 
 ```
-Users (8 records):
-  - Anna Müller, Thomas Berger, Sarah Klein, Michael Weber
-  - Laura Fischer, Hans Schneider, Eva Bauer, Klaus Richter
-
 Properties (2 sample records, each with buildings and units):
-  - "Musterstraße WEG" (type: WEG) — 1 building, 4 units
-  - "Berliner Allee MV" (type: MV) — 2 buildings, 6 units total
-  Each property has a MANAGER and ACCOUNTANT assigned via PropertyStaff
+  - "Musterstraße WEG" (type: WEG, managerName: "Anna Müller", accountantName: "Thomas Berger") — 1 building, 4 units
+  - "Berliner Allee MV" (type: MV, managerName: "Sarah Klein", accountantName: "Michael Weber") — 2 buildings, 6 units total
 ```
 
 **Verification checklist for Step 1:**
@@ -155,7 +130,6 @@ Properties (2 sample records, each with buildings and units):
     property.ts
     building.ts
     unit.ts
-    user.ts
   /validators
     property.ts                 ← Zod schemas (shared with frontend)
     building.ts
@@ -180,25 +154,24 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 ```ts
 // services/property.ts
 getProperties(filters?: PropertyFilters): Promise<PropertySummary[]>
-  // filters: { type?, managerId?, sizeMin?, sizeMax?, yearMin?, yearMax? }
-  // returns: id, name, type, propertyNumber, createdAt, staff (manager + accountant names)
+  // filters: { type?, sizeMin?, sizeMax?, yearMin?, yearMax? }
+  // returns: id, name, type, propertyNumber, createdAt, managerName, accountantName
   // applies server-side WHERE clause from filters (see Section 4.2.1)
 
 getPropertyById(id: string): Promise<PropertyDetail | null>
-  // returns full property with buildings → units and staff → user
+  // returns full property with buildings → units
 
 createProperty(data: CreatePropertyInput): Promise<Property>
   // single Prisma transaction:
   //   1. generate propertyNumber (PROP-{YEAR}-{padded sequence})
-  //   2. create Property
+  //   2. create Property (including managerName, accountantName)
   //   3. create Buildings, keeping a clientId → DB id map
   //   4. create Units, resolving buildingClientId → real buildingId via the map
-  //   5. create PropertyStaff records (manager + accountant)
 
 updateProperty(id: string, data: UpdatePropertyInput): Promise<Property>
 
 deleteProperty(id: string): Promise<void>
-  // hard delete — removes property and all related buildings, units, and staff records
+  // hard delete — removes property and all related buildings and units
 
 // services/building.ts
 createBuilding(data: CreateBuildingInput): Promise<Building>
@@ -211,10 +184,6 @@ bulkCreateUnits(units: CreateUnitInput[]): Promise<Unit[]>
   // uses prisma.unit.createMany()
 updateUnit(id: string, data: UpdateUnitInput): Promise<Unit>
 deleteUnit(id: string): Promise<void>
-
-// services/user.ts
-getUsers(): Promise<User[]>
-  // returns all users for manager/accountant dropdowns in the frontend
 ```
 
 #### Property Number Generation
@@ -234,8 +203,8 @@ const propertyNumber = `PROP-${year}-${String(count + 1).padStart(5, '0')}`
 export const CreatePropertySchema = z.object({
   name: z.string().min(1),
   type: z.enum(['WEG', 'MV']),
-  managerId: z.string().uuid(),
-  accountantId: z.string().uuid(),
+  managerName: z.string().optional(),
+  accountantName: z.string().optional(),
   declarationFileUrl: z.string().optional(),
   buildings: z.array(CreateBuildingSchema.extend({ clientId: z.string().uuid() })).min(1),
   units: z.array(CreateUnitSchema),
@@ -371,8 +340,6 @@ src/app/api/
     route.ts              ← POST single or bulk (discriminated by `units` array key)
     [id]/
       route.ts            ← PATCH (serializes Decimal), DELETE
-  users/
-    route.ts              ← GET (list — for dropdowns)
   upload/
     route.ts              ← POST: accept PDF, store in /tmp, return { fileRef }
   extract/
@@ -403,11 +370,6 @@ src/app/api/
 | POST | `/api/units` | Create single unit or bulk (`{ units: UnitInput[] }`); serializes `coOwnershipShare` Decimal |
 | PATCH | `/api/units/:id` | Update unit; serializes `coOwnershipShare` Decimal |
 | DELETE | `/api/units/:id` | Delete unit |
-
-**Users**
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/users` | Return all users (for manager/accountant dropdowns) |
 
 **File & AI**
 | Method | Path | Description |
@@ -504,12 +466,11 @@ The dashboard exposes four filters rendered above the property table:
 | Filter | UI Control | Query param | Description |
 |--------|-----------|-------------|-------------|
 | Property type | Toggle / segmented control | `type` | `WEG`, `MV`, or empty (all) |
-| Manager | Dropdown (populated from `GET /api/users`) | `managerId` | Filter by assigned manager UUID |
 | Surface (min / max) | Two numeric inputs | `sizeMin`, `sizeMax` | Filter properties whose units contain at least one unit within the given sqm range |
 | Construction year | Two numeric inputs | `yearMin`, `yearMax` | Filter properties whose units contain at least one unit within the given construction year range |
 
 **URL-reflected filter state:**
-- All active filter values are written to the URL as search params (e.g. `/dashboard?type=WEG&managerId=abc&sizeMin=40`).
+- All active filter values are written to the URL as search params (e.g. `/dashboard?type=WEG&sizeMin=40`).
 - On page load the URL params are read and applied as the initial filter state — deep-linking and browser back/forward work correctly.
 - Filters are applied **server-side**: the `GET /api/properties` endpoint (or a Next.js Server Component using Prisma directly) receives the params and builds a `WHERE` clause before returning data. No client-side array filtering.
 - A "Clear filters" button resets all params and navigates back to `/dashboard`.
@@ -532,7 +493,7 @@ export function useSearchParam(key: string) {
 
 - `clearOnDefault: true` — removes the param from the URL when the value equals the default (empty string), keeping URLs clean.
 - `shallow: false` — triggers a server navigation on change, so the Server Component re-renders with the updated `searchParams` and re-fetches filtered data from the DB.
-- Each filter control calls `useSearchParam` with its own key (`'type'`, `'managerId'`, `'sizeMin'`, etc.) — no custom URL serialization needed.
+- Each filter control calls `useSearchParam` with its own key (`'type'`, `'sizeMin'`, etc.) — no custom URL serialization needed.
 - Numeric inputs (`sizeMin`, `sizeMax`, `yearMin`, `yearMax`) must debounce their URL writes to avoid triggering a server navigation on every keystroke. Use `useDebouncedCallback` from the `use-debounce` package with a 300ms delay.
 
 **Server-side filtering logic:**
@@ -541,7 +502,6 @@ export function useSearchParam(key: string) {
 // app/dashboard/page.tsx  (Server Component)
 interface SearchParams {
   type?: 'WEG' | 'MV'
-  managerId?: string
   sizeMin?: string
   sizeMax?: string
   yearMin?: string
@@ -551,9 +511,6 @@ interface SearchParams {
 // Prisma where clause built from searchParams:
 const where: Prisma.PropertyWhereInput = {
   ...(type && { type }),
-  ...(managerId && {
-    staff: { some: { userId: managerId, role: 'MANAGER' } },
-  }),
   ...((sizeMin || sizeMax) && {
     buildings: {
       some: {
@@ -586,7 +543,6 @@ const where: Prisma.PropertyWhereInput = {
 | Param | Type | Effect |
 |-------|------|--------|
 | `type` | `WEG\|MV` | Exact match on `Property.type` |
-| `managerId` | UUID string | Match via `PropertyStaff` join |
 | `sizeMin` | number | Unit `size >= sizeMin` |
 | `sizeMax` | number | Unit `size <= sizeMax` |
 | `yearMin` | number | Unit `constructionYear >= yearMin` |
@@ -604,16 +560,8 @@ Global state for the full flow managed via **Zustand store** (`/lib/store/proper
 Fields:
 - Management type: WEG / MV (segmented control or radio)
 - Property name (text input)
-- Property manager (dropdown populated from `GET /api/users`)
-- Accountant (dropdown populated from `GET /api/users`)
-  - The manager and accountant must be different users. Enforced via a Zod `.refine()` on the Step 1 schema:
-    ```ts
-    .refine(data => data.managerId !== data.accountantId, {
-      message: "Manager and accountant must be different people",
-      path: ["accountantId"],
-    })
-    ```
-    The `@@unique([propertyId, role])` DB constraint remains as a safety net.
+- Property manager (plain text input; pre-filled from AI extraction via `managerName` when found in the PDF)
+- Accountant (plain text input; pre-filled from AI extraction via `accountantName` when found in the PDF)
 - PDF upload for Teilungserklärung (file input, PDF only, max 10MB)
   - On upload: POST to `/api/upload` then POST to `/api/extract`
   - Show loading state during extraction
@@ -659,7 +607,7 @@ The wizard uses a single **React Hook Form** instance (`useForm<CreatePropertyIn
 
 **Rationale for replacing the originally specified React Context + useReducer approach:**
 
-- `CreatePropertySchema` matches the API payload exactly — no transformation needed; RHF form values serialize directly to POST body
+- `CreatePropertySchema` (with `managerName`/`accountantName` as optional strings) matches the API payload exactly — no transformation needed; RHF form values serialize directly to POST body
 - `useFieldArray` handles dynamic arrays (`buildings`, `units`) idiomatically without boilerplate
 - Eliminates dual source-of-truth (form data in context vs. RHF internal state)
 - Reduces boilerplate significantly — no custom reducer, no manual dispatch calls
