@@ -106,7 +106,7 @@ docker-logs-db:
 docker-clean:
 	@echo "🧹 Full cleanup..."
 	@$(DOCKER_COMPOSE) down -v --remove-orphans
-	@docker rmi buenita_app-web-app 2>/dev/null || true
+	@docker rmi buena-case-study-web-app 2>/dev/null || true
 	@echo "✅ Cleanup complete"
 
 docker-rebuild: docker-clean docker-build docker-up
