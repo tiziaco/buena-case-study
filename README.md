@@ -47,7 +47,7 @@ The original assignment brief is available in [`docs/PRD.md`](./docs/PRD.md).
 
 ```bash
 git clone https://github.com/tiziaco/buenita_app.git
-cd buenita_app
+cd buena-case-study
 cp .env.example .env
 # Add your OPENAI_API_KEY to .env
 ```
