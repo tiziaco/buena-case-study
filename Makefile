@@ -44,6 +44,7 @@ help:
 install:
 	@echo "📦 Installing dependencies..."
 	@npm install
+	@npx prisma generate
 	@echo "✅ Dependencies installed"
 
 # Full setup
@@ -54,7 +55,7 @@ setup: install docker-up-db db-migrate db-seed
 # Clean local dev artifacts
 clean:
 	@echo "🧹 Cleaning local dev artifacts..."
-	@rm -rf node_modules .next coverage
+	@rm -rf node_modules .next coverage src/generated
 	@echo "✅ Clean complete"
 
 # Build the app for production
