@@ -1,6 +1,6 @@
 # Buena Property Dashboard
 
-A property management dashboard built as part of the Buena Tech Case Study. Allows property managers to digitize physical buildings into structured digital objects through a guided 3-step creation flow.
+A property management dashboard built as part of the Buena Case Study. Allows property managers to digitize physical buildings into structured digital objects through a guided 3-step creation flow.
 
 ## Tech Stack
 
@@ -25,125 +25,91 @@ A property management dashboard built as part of the Buena Tech Case Study. Allo
 
 ## Setup
 
-### Quick Start (using Make)
+### 1. Clone and configure
 
 ```bash
 git clone https://github.com/tiziaco/buenita_app.git
 cd buenita_app
 cp .env.example .env
-# Edit .env with your DATABASE_URL and OPENAI_API_KEY
-make setup
-make dev
+# Add your OPENAI_API_KEY to .env
 ```
 
-### Manual Setup
+### 2. Quick Start (Docker)
 
-#### 1. Clone and install
+Spins up the full stack (web app + database) with a single command. No local Node.js install required.
 
 ```bash
-git clone <repo-url>
-cd buenita_app
-npm install
+make docker-up
 ```
 
-#### 2. Configure environment variables
+Open [http://localhost:3000](http://localhost:3000). The app redirects to `/dashboard`.
+
+### 3. Development Setup
+
+Runs the app locally with hot reload. Requires Node.js v20+.
 
 ```bash
-cp .env.example .env
+make setup   # install deps · start postgres · run migrations · seed data
+make dev     # start Next.js dev server
 ```
 
-Edit `.env` and fill in your values:
-
-```env
-DATABASE_URL=postgresql://user:password@localhost:5432/buena
-OPENAI_API_KEY=your_key_here   # optional
-```
-
-#### 3. Start the database
-
-```bash
-docker compose up -d
-```
-
-#### 4. Run migrations
-
-```bash
-npx prisma migrate dev
-```
-
-#### 5. Seed sample data
-
-```bash
-npx prisma db seed
-```
-
-This populates the database with 8 users and 2 sample properties (with buildings and units) so the dashboard has real data from day one.
-
-### Available Make Commands
-
-Run `make help` to see all available commands:
-
-- **Setup**: `make setup` - Full automated setup
-- **Docker**: `make docker-up`, `make docker-down`, `make docker-logs`
-- **Database**: `make migrate`, `make seed`, `make db-reset`
-- **Testing**: `make test`, `make test-unit`, `make test-coverage`
-- **Development**: `make dev` - Start development server
+Open [http://localhost:3000](http://localhost:3000). The seed populates the database with 8 users and 2 sample properties so the dashboard has real data from day one.
 
 ---
 
-## Running the App
+## Useful Commands
+
+### Testing
 
 ```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser. The app redirects to `/dashboard`.
-
----
-
-## Running Tests
-
-### Using Make (recommended)
-
-```bash
-make test             # run all tests (unit + integration)
+make test             # all tests (unit + integration)
 make test-unit        # unit tests only
 make test-integration # integration tests only
 make test-coverage    # full suite with coverage report
 ```
 
-### Using npm directly
+No manual database setup needed — integration tests use [Testcontainers](https://testcontainers.com/) to spin up a real PostgreSQL instance automatically. **Requires Docker to be running.**
+
+### Docker
 
 ```bash
-npm test                        # run all tests (unit + integration)
-npm run test:unit               # unit tests only
-npm run test:unit:watch         # unit tests in watch mode
-npm run test:integration        # integration tests only
-npm run test:coverage           # full suite with coverage report
-npm run test:coverage:integration  # integration tests with coverage report
+make docker-up        # start all services (web app + postgres)
+make docker-down      # stop all services
+make docker-rebuild   # clean build + restart
+make docker-logs      # follow all service logs
+make docker-logs-web  # follow web app logs only
 ```
 
-No manual database setup is required — integration tests use [Testcontainers](https://testcontainers.com/) to spin up a real PostgreSQL instance automatically, run migrations, and tear it down when done.
-
-**Requires Docker to be running.**
+Run `make help` to see the full list of available commands.
 
 ---
 
 ## Project Structure
 
 ```
-/app
-  /dashboard          ← Property list page (Server Component)
-  /properties/new     ← 3-step property creation flow
-  /api                ← Route handlers (thin wrappers over services)
+/src
+  /app
+    /(app)
+      /dashboard        ← Property list page (Server Component)
+      /properties       ← 3-step property creation flow
+      /contracts        ← Placeholder for future features 
+    /api                ← Route handlers (thin wrappers over services)
 
-/lib
-  /services           ← Business logic (property, building, unit, user)
-  /validators         ← Zod schemas (shared between frontend and backend)
-  /store              ← Zustand store for creation wizard state
-  /hooks              ← Shared hooks (useSearchParam, etc.)
-  /types              ← TypeScript types derived from Zod schemas
-  prisma.ts           ← PrismaClient singleton
+  /components
+    /dashboard          ← Dashboard UI components (table, filters, actions)
+    /property-creation  ← Creation wizard steps and upload zone
+    /layout             ← Sidebar, nav, and layout components
+    /ui                 ← shadcn/ui primitives
+
+  /lib
+    /services           ← Business logic (property, building, unit, user)
+    /validators         ← Zod schemas (shared between frontend and backend)
+    /api                ← API response helpers
+    prisma.ts           ← PrismaClient singleton
+
+  /hooks                ← Shared hooks (data fetching, PDF extraction)
+  /types                ← TypeScript types derived from Zod schemas
+  /providers            ← React context providers (TanStack Query, etc.)
 
 /prisma
   schema.prisma
@@ -155,5 +121,3 @@ No manual database setup is required — integration tests use [Testcontainers](
 ## Notes on Authentication
 
 Authentication is intentionally out of scope for this case study. The app has no login flow — users are seeded directly into the database and selected via dropdowns.
-
-In a production environment, authentication would be added using a solution like [NextAuth.js](https://next-auth.js.org/) or [Clerk](https://clerk.com/). The `User` model is already structured to support this — adding a `passwordHash` or OAuth provider field and protecting routes via middleware would be the natural next step.
