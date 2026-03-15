@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const CreateUnitSchema = z.object({
   buildingClientId: z.uuid({ error: 'Please assign a building' }),
   unitNumber: z.string().min(1, 'Unit number is required'),
-  type: z.enum(['APARTMENT', 'OFFICE', 'GARDEN', 'PARKING'], { error: 'Please select a unit type' }),
+  type: z.enum(['APARTMENT', 'OFFICE', 'GARDEN', 'PARKING', 'STORAGE', 'SHOP', 'OTHER'], { error: 'Please select a unit type' }),
   floor: z.number().int().optional(),
   entrance: z.string().optional(),
   size: z.number().positive({ error: 'Size must be greater than 0' }).optional(),

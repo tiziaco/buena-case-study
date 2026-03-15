@@ -17,6 +17,9 @@ enum UnitType {
   OFFICE
   GARDEN
   PARKING
+  STORAGE
+  SHOP
+  OTHER
 }
 
 model Property {
