@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/layout/app-sidebar";
+import { SidebarToggle } from "@/components/layout/sidebar-toggle";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { HUB_NAV } from "@/lib/hub-nav";
 
@@ -6,7 +7,8 @@ export default function HubLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider className="h-svh overflow-hidden">
       <AppSidebar items={HUB_NAV} variant="inset" />
-      <SidebarInset className="flex flex-col overflow-hidden">
+      <SidebarInset className="relative flex flex-col">
+        <SidebarToggle />
         <div className="flex-1 overflow-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="px-2 py-2 min-w-0">
             {children}
