@@ -10,10 +10,8 @@ import type { PropertyFilters, PropertySummary } from '@/types/property'
 async function fetchProperties(filters: PropertyFilters): Promise<PropertySummary[]> {
   const params = new URLSearchParams()
   if (filters.type) params.set('type', filters.type)
-  if (filters.sizeMin) params.set('sizeMin', filters.sizeMin)
-  if (filters.sizeMax) params.set('sizeMax', filters.sizeMax)
-  if (filters.yearMin) params.set('yearMin', filters.yearMin)
-  if (filters.yearMax) params.set('yearMax', filters.yearMax)
+  if (filters.city) params.set('city', filters.city)
+  if (filters.managerName) params.set('managerName', filters.managerName)
 
   const qs = params.toString()
   const res = await fetch(`/api/properties${qs ? `?${qs}` : ''}`)

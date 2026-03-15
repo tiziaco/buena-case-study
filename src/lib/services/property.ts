@@ -5,34 +5,12 @@ import type { CreatePropertyInput, UpdatePropertyInput } from '@/lib/validators/
 import type { PropertyFilters, PropertySummary, PropertyDetail } from '@/types/property'
 
 export async function getProperties(filters?: PropertyFilters): Promise<PropertySummary[]> {
-  const { type, sizeMin, sizeMax, yearMin, yearMax } = filters ?? {}
+  const { type, city, managerName } = filters ?? {}
 
   const where: Prisma.PropertyWhereInput = {
     ...(type && { type: type as PropertyType }),
-    ...((sizeMin || sizeMax) && {
-      buildings: {
-        some: {
-          units: {
-            some: {
-              ...(sizeMin && { size: { gte: Number(sizeMin) } }),
-              ...(sizeMax && { size: { lte: Number(sizeMax) } }),
-            },
-          },
-        },
-      },
-    }),
-    ...((yearMin || yearMax) && {
-      buildings: {
-        some: {
-          units: {
-            some: {
-              ...(yearMin && { constructionYear: { gte: Number(yearMin) } }),
-              ...(yearMax && { constructionYear: { lte: Number(yearMax) } }),
-            },
-          },
-        },
-      },
-    }),
+    ...(managerName && { managerName: { contains: managerName, mode: 'insensitive' } }),
+    ...(city && { buildings: { some: { city: { contains: city, mode: 'insensitive' } } } }),
   }
 
   const properties = await prisma.property.findMany({
@@ -45,6 +23,7 @@ export async function getProperties(filters?: PropertyFilters): Promise<Property
       managerName: true,
       accountantName: true,
       createdAt: true,
+      buildings: { select: { city: true } },
     },
     orderBy: { createdAt: 'desc' },
   })
@@ -57,6 +36,7 @@ export async function getProperties(filters?: PropertyFilters): Promise<Property
     createdAt: p.createdAt.toISOString(),
     managerName: p.managerName,
     accountantName: p.accountantName,
+    cities: p.buildings.map((b) => b.city),
   }))
 }
 
@@ -141,6 +121,11 @@ export async function createProperty(data: CreatePropertyInput): Promise<Propert
       })
     }
 
+    const createdBuildings = await tx.building.findMany({
+      where: { propertyId: property.id },
+      select: { city: true },
+    })
+
     return {
       id: property.id,
       name: property.name,
@@ -149,6 +134,7 @@ export async function createProperty(data: CreatePropertyInput): Promise<Propert
       createdAt: property.createdAt.toISOString(),
       managerName: property.managerName,
       accountantName: property.accountantName,
+      cities: createdBuildings.map((b) => b.city),
     }
   })
 }

@@ -7,10 +7,8 @@ export async function GET(req: Request): Promise<Response> {
     const { searchParams } = new URL(req.url)
     const filters = {
       type: searchParams.get('type') ?? undefined,
-      sizeMin: searchParams.get('sizeMin') ?? undefined,
-      sizeMax: searchParams.get('sizeMax') ?? undefined,
-      yearMin: searchParams.get('yearMin') ?? undefined,
-      yearMax: searchParams.get('yearMax') ?? undefined,
+      city: searchParams.get('city') ?? undefined,
+      managerName: searchParams.get('managerName') ?? undefined,
     }
     const properties = await getProperties(filters)
     return apiSuccess(properties)

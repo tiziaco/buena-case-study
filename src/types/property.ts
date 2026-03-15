@@ -2,10 +2,8 @@ import type { PropertyType } from '@/generated/prisma/client'
 
 export type PropertyFilters = {
   type?: string
-  sizeMin?: string
-  sizeMax?: string
-  yearMin?: string
-  yearMax?: string
+  city?: string
+  managerName?: string
 }
 
 export type PropertySummary = {
@@ -16,6 +14,7 @@ export type PropertySummary = {
   createdAt: string
   managerName: string | null
   accountantName: string | null
+  cities: string[]
 }
 
 export type PropertyDetail = {

@@ -64,16 +64,26 @@ describe('CreatePropertySchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('accepts property without managerName (optional)', () => {
+  it('rejects property without managerName (required)', () => {
     const { managerName, ...rest } = validProperty
     const result = CreatePropertySchema.safeParse(rest)
-    expect(result.success).toBe(true)
+    expect(result.success).toBe(false)
   })
 
-  it('accepts property without accountantName (optional)', () => {
+  it('rejects property without accountantName (required)', () => {
     const { accountantName, ...rest } = validProperty
     const result = CreatePropertySchema.safeParse(rest)
-    expect(result.success).toBe(true)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects empty managerName', () => {
+    const result = CreatePropertySchema.safeParse({ ...validProperty, managerName: '' })
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects empty accountantName', () => {
+    const result = CreatePropertySchema.safeParse({ ...validProperty, accountantName: '' })
+    expect(result.success).toBe(false)
   })
 
   it('rejects empty buildings array', () => {

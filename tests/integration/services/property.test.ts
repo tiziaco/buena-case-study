@@ -79,6 +79,34 @@ describe('property service', () => {
       expect(result).toHaveLength(1)
       expect(result[0].name).toBe('WEG Property')
     })
+
+    it('filters by city (case-insensitive)', async () => {
+      const berlinClientId = uuidv4()
+      const munichClientId = uuidv4()
+      await createProperty(buildPropertyInput({
+        name: 'Berlin Property',
+        buildings: [{ clientId: berlinClientId, street: 'Hauptstr.', houseNumber: '1', postalCode: '10115', city: 'Berlin', country: 'Germany' }],
+        units: [{ buildingClientId: berlinClientId, unitNumber: 'A-01', type: 'APARTMENT' }],
+      }))
+      await createProperty(buildPropertyInput({
+        name: 'Munich Property',
+        buildings: [{ clientId: munichClientId, street: 'Maximilianstr.', houseNumber: '5', postalCode: '80539', city: 'Munich', country: 'Germany' }],
+        units: [{ buildingClientId: munichClientId, unitNumber: 'B-01', type: 'APARTMENT' }],
+      }))
+
+      const result = await getProperties({ city: 'berlin' })
+      expect(result).toHaveLength(1)
+      expect(result[0].name).toBe('Berlin Property')
+    })
+
+    it('filters by manager name (case-insensitive)', async () => {
+      await createProperty(buildPropertyInput({ name: 'Property A', managerName: 'Anna Müller' }))
+      await createProperty(buildPropertyInput({ name: 'Property B', managerName: 'Thomas Berger' }))
+
+      const result = await getProperties({ managerName: 'anna' })
+      expect(result).toHaveLength(1)
+      expect(result[0].name).toBe('Property A')
+    })
   })
 
   // ── getPropertyById ────────────────────────────────────────────────────────
