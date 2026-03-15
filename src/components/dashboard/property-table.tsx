@@ -65,6 +65,7 @@ export function PropertyTable({ filters }: PropertyTableProps) {
               <TableHead className="w-30">Type</TableHead>
               <TableHead className="w-35">Property No.</TableHead>
               <TableHead className="w-40">Manager</TableHead>
+              <TableHead className="w-32">City</TableHead>
               <TableHead className="w-15">Created</TableHead>
               <TableHead className="w-8" />
             </TableRow>
@@ -72,7 +73,7 @@ export function PropertyTable({ filters }: PropertyTableProps) {
           <TableBody>
             {properties.length === 0 ? (
               <TableRow className="hover:bg-transparent">
-                <TableCell colSpan={6}>
+                <TableCell colSpan={7}>
                   <div className="py-12 text-center">
                     <p className="text-sm font-medium">No properties found.</p>
                     <p className="text-muted-foreground mt-1 text-sm">
@@ -95,6 +96,11 @@ export function PropertyTable({ filters }: PropertyTableProps) {
                   </TableCell>
                   <TableCell>
                     {property.managerName ?? (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {property.cities[0] ?? (
                       <span className="text-muted-foreground">—</span>
                     )}
                   </TableCell>
