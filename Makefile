@@ -1,4 +1,4 @@
-.PHONY: help install setup dev build docker-build docker-up docker-down docker-restart docker-logs docker-logs-web docker-logs-db docker-clean docker-rebuild db-up db-migrate db-seed db-reset test test-unit test-integration test-coverage
+.PHONY: help install setup dev build docker-build docker-up docker-down docker-restart docker-logs docker-logs-web docker-logs-db docker-clean docker-rebuild docker-up-db db-migrate db-seed db-reset test test-unit test-integration test-coverage
 
 DOCKER_COMPOSE ?= docker compose
 
@@ -8,15 +8,15 @@ help:
 	@echo ""
 	@echo "Setup:"
 	@echo "  make install          - Install dependencies"
-	@echo "  make setup            - Full setup: install + db-up + db-migrate + db-seed"
+	@echo "  make setup            - Full setup: install + docker-up-db + db-migrate + db-seed"
 	@echo ""
 	@echo "Docker:"
 	@echo "  make docker-up        - Start all services (web-app, postgres)"
 	@echo "  make docker-build     - Build Docker images"
-	@echo "  make db-up            - Start only the postgres container"
+	@echo "  make docker-up-db            - Start only the postgres container"
 	@echo "  make docker-down      - Stop all services"
 	@echo "  make docker-restart   - Restart all services"
-	@echo "  make docker-clean     - Stop services, remove containers and volumes"
+	@echo "  make docker-clean     - Remove containers, volumes, and images (full cleanup)"
 	@echo "  make docker-rebuild   - Clean + build + up"
 	@echo ""
 	@echo "Database:"
@@ -46,7 +46,7 @@ install:
 	@echo "✅ Dependencies installed"
 
 # Full setup
-setup: install db-up db-migrate db-seed
+setup: install docker-up-db db-migrate db-seed
 	@echo ""
 	@echo "✅ Setup complete! Run 'make dev' to start the development server."
 
@@ -58,11 +58,6 @@ build:
 dev:
 	@npm run dev
 
-# Start only the postgres container
-db-up:
-	@echo "🐘 Starting postgres..."
-	@$(DOCKER_COMPOSE) up -d postgres
-	@echo "✅ Postgres running at localhost:5432"
 
 # Docker commands
 docker-build:
@@ -76,6 +71,11 @@ docker-up:
 	@echo "✅ Services running!"
 	@echo "   Web App:  http://localhost:3000"
 	@echo "   Database: localhost:5432"
+
+docker-up-db:
+	@echo "🐘 Starting postgres..."
+	@$(DOCKER_COMPOSE) up -d postgres
+	@echo "✅ Postgres running at localhost:5432"
 
 docker-down:
 	@echo "📛 Stopping services..."
@@ -97,13 +97,14 @@ docker-logs-db:
 	@$(DOCKER_COMPOSE) logs -f postgres
 
 docker-clean:
-	@echo "🧹 Cleaning up..."
-	@$(DOCKER_COMPOSE) down -v
+	@echo "🧹 Full cleanup..."
+	@$(DOCKER_COMPOSE) down -v --remove-orphans
 	@docker rmi buenita_app-web-app 2>/dev/null || true
 	@echo "✅ Cleanup complete"
 
 docker-rebuild: docker-clean docker-build docker-up
 	@echo "✅ Rebuild complete"
+
 
 # Database commands
 db-migrate:
@@ -120,6 +121,7 @@ db-reset:
 	@echo "⚠️  Resetting database (this will delete all data)..."
 	@npx prisma migrate reset --force
 	@echo "✅ Database reset complete"
+
 
 # Test commands
 test:
