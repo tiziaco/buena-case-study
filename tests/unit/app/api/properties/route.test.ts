@@ -13,7 +13,8 @@ const mockSummary = {
   type: 'WEG',
   propertyNumber: 'PROP-2026-00001',
   createdAt: new Date(),
-  staff: { manager: null, accountant: null },
+  managerName: null,
+  accountantName: null,
 }
 
 beforeEach(() => vi.clearAllMocks())
@@ -30,10 +31,10 @@ describe('GET /api/properties', () => {
 
   it('passes query filters to service', async () => {
     vi.mocked(propertyService.getProperties).mockResolvedValue([])
-    const req = new Request('http://localhost/api/properties?type=WEG&managerId=abc')
+    const req = new Request('http://localhost/api/properties?type=WEG')
     await GET(req)
     expect(propertyService.getProperties).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'WEG', managerId: 'abc' }),
+      expect.objectContaining({ type: 'WEG' }),
     )
   })
 
@@ -49,8 +50,8 @@ describe('POST /api/properties', () => {
   const validBody = {
     name: 'My Property',
     type: 'WEG',
-    managerId: '550e8400-e29b-41d4-a716-446655440000',
-    accountantId: '550e8400-e29b-41d4-a716-446655440001',
+    managerName: 'Alice Manager',
+    accountantName: 'Bob Accountant',
     buildings: [
       {
         clientId: '550e8400-e29b-41d4-a716-446655440002',
