@@ -12,11 +12,6 @@ enum PropertyType {
   MV
 }
 
-enum StaffRole {
-  MANAGER
-  ACCOUNTANT
-}
-
 enum UnitType {
   APARTMENT
   OFFICE
@@ -24,36 +19,16 @@ enum UnitType {
   PARKING
 }
 
-model User {
-  id               String          @id @default(uuid())
-  name             String
-  email            String          @unique
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  staffAssignments PropertyStaff[]
-}
-
-model PropertyStaff {
-  id         String    @id @default(uuid())
-  propertyId String
-  userId     String
-  role       StaffRole
-  createdAt  DateTime  @default(now())
-  property   Property  @relation(fields: [propertyId], references: [id])
-  user       User      @relation(fields: [userId], references: [id])
-
-  @@unique([propertyId, role])
-}
-
 model Property {
-  id                 String          @id @default(uuid())
+  id                 String        @id @default(uuid())
   name               String
   type               PropertyType
-  propertyNumber     String          @unique
+  propertyNumber     String        @unique
   declarationFileUrl String?
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
-  staff              PropertyStaff[]
+  managerName        String?
+  accountantName     String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
   buildings          Building[]
 }
 

@@ -5,6 +5,8 @@ export const ExtractionSchema = z.object({
     name: z.string(),
     type: z.enum(['WEG', 'MV']),
   }),
+  manager_name: z.string().nullable(),
+  accountant_name: z.string().nullable(),
   buildings: z.array(
     z.object({
       name: z.string(),

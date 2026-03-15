@@ -8,6 +8,8 @@ const EXTRACTION_PROMPT = `Extract structured data from this German property dec
 
 Return the following fields:
 - property: the property name and type (WEG or MV)
+- manager_name: name of the property manager (Verwalter) if present in the document, otherwise null
+- accountant_name: name of the accountant (Buchhalter/Beirat) if present in the document, otherwise null
 - buildings: all buildings with their name (e.g. "Haus A"), street, house_number, postal_code, city, country
 - units: all units with:
   - number: unit number as a string (e.g. "01")
