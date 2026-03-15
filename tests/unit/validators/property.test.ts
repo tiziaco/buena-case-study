@@ -2,8 +2,6 @@ import { describe, it, expect } from 'vitest'
 import { CreatePropertySchema, UpdatePropertySchema } from '@/lib/validators/property'
 import { v4 as uuidv4 } from 'uuid'
 
-const managerId = uuidv4()
-const accountantId = uuidv4()
 const buildingClientId = uuidv4()
 
 const validBuilding = {
@@ -23,8 +21,8 @@ const validUnit = {
 const validProperty = {
   name: 'Musterhof',
   type: 'WEG' as const,
-  managerId,
-  accountantId,
+  managerName: 'Anna Müller',
+  accountantName: 'Thomas Berger',
   buildings: [validBuilding],
   units: [validUnit],
 }
@@ -66,16 +64,16 @@ describe('CreatePropertySchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('rejects non-uuid managerId', () => {
-    const result = CreatePropertySchema.safeParse({ ...validProperty, managerId: 'not-a-uuid' })
-    expect(result.success).toBe(false)
-    expect(result.error?.issues[0].path).toContain('managerId')
+  it('accepts property without managerName (optional)', () => {
+    const { managerName, ...rest } = validProperty
+    const result = CreatePropertySchema.safeParse(rest)
+    expect(result.success).toBe(true)
   })
 
-  it('rejects non-uuid accountantId', () => {
-    const result = CreatePropertySchema.safeParse({ ...validProperty, accountantId: 'bad' })
-    expect(result.success).toBe(false)
-    expect(result.error?.issues[0].path).toContain('accountantId')
+  it('accepts property without accountantName (optional)', () => {
+    const { accountantName, ...rest } = validProperty
+    const result = CreatePropertySchema.safeParse(rest)
+    expect(result.success).toBe(true)
   })
 
   it('rejects empty buildings array', () => {
@@ -111,5 +109,10 @@ describe('UpdatePropertySchema', () => {
   it('rejects empty name string', () => {
     const result = UpdatePropertySchema.safeParse({ name: '' })
     expect(result.success).toBe(false)
+  })
+
+  it('accepts managerName update', () => {
+    const result = UpdatePropertySchema.safeParse({ managerName: 'New Manager' })
+    expect(result.success).toBe(true)
   })
 })
