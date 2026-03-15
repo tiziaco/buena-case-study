@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useFormContext, Controller } from 'react-hook-form'
 import type { CreatePropertyFormValues } from '@/lib/validators/property'
 import { Input } from '@/components/ui/input'
@@ -25,6 +25,7 @@ interface UnitTableRowProps {
   index: number
   isLastInGroup: boolean
   hasError: boolean
+  autoFocus?: boolean
   onDuplicate: (index: number) => void
   onDelete: (index: number) => void
   onAppendRow: (buildingClientId: string) => void
@@ -34,6 +35,7 @@ export function UnitTableRow({
   index,
   isLastInGroup,
   hasError,
+  autoFocus = false,
   onDuplicate,
   onDelete,
   onAppendRow,
@@ -41,6 +43,10 @@ export function UnitTableRow({
   const { register, control, watch } = useFormContext<CreatePropertyFormValues>()
   const buildingClientId = watch(`units.${index}.buildingClientId`)
   const rowRef = useRef<HTMLTableRowElement>(null)
+
+  useEffect(() => {
+    if (autoFocus) rowRef.current?.querySelector('input')?.focus()
+  }, [])
 
   const CELL_COUNT = 8
 
@@ -64,7 +70,6 @@ export function UnitTableRow({
   return (
     <tr
       ref={rowRef}
-      data-unit-row
       className={cn(
         'group/row border-b transition-colors hover:bg-muted/30',
         hasError && 'border-l-2 border-l-destructive'

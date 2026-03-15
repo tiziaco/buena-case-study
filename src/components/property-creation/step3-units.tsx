@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useFormContext, useFieldArray } from 'react-hook-form'
 import { Plus } from 'lucide-react'
 
@@ -18,6 +18,7 @@ export function Step3Units() {
   const { fields, append, insert, remove } = useFieldArray({ control, name: 'units' })
 
   const buildings = watch('buildings')
+  const [pendingFocusIndex, setPendingFocusIndex] = useState<number | null>(null)
 
   function newUnit(buildingClientId: string) {
     return {
@@ -49,7 +50,6 @@ export function Step3Units() {
   }
 
   function handleAppendRow(buildingClientId: string) {
-    // Find the last index in the fields array that belongs to this building
     let insertAt = fields.length
     for (let i = fields.length - 1; i >= 0; i--) {
       if (fields[i].buildingClientId === buildingClientId) {
@@ -58,12 +58,7 @@ export function Step3Units() {
       }
     }
     insert(insertAt, newUnit(buildingClientId))
-    setTimeout(() => {
-      const rows = document.querySelectorAll('tr[data-unit-row]')
-      const targetRow = rows[insertAt]
-      const firstInput = targetRow?.querySelector('input')
-      if (firstInput instanceof HTMLElement) firstInput.focus()
-    }, 50)
+    setPendingFocusIndex(insertAt)
   }
 
   return (
@@ -111,6 +106,7 @@ export function Step3Units() {
                         index={index}
                         isLastInGroup={groupIndex === buildingUnits.length - 1}
                         hasError={!!errors.units?.[index]}
+                        autoFocus={index === pendingFocusIndex}
                         onDuplicate={handleDuplicate}
                         onDelete={remove}
                         onAppendRow={handleAppendRow}
