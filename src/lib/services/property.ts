@@ -5,13 +5,10 @@ import type { CreatePropertyInput, UpdatePropertyInput } from '@/lib/validators/
 import type { PropertyFilters, PropertySummary, PropertyDetail } from '@/types/property'
 
 export async function getProperties(filters?: PropertyFilters): Promise<PropertySummary[]> {
-  const { type, managerId, sizeMin, sizeMax, yearMin, yearMax } = filters ?? {}
+  const { type, sizeMin, sizeMax, yearMin, yearMax } = filters ?? {}
 
   const where: Prisma.PropertyWhereInput = {
     ...(type && { type: type as PropertyType }),
-    ...(managerId && {
-      staff: { some: { userId: managerId, role: 'MANAGER' } },
-    }),
     ...((sizeMin || sizeMax) && {
       buildings: {
         some: {
@@ -45,13 +42,9 @@ export async function getProperties(filters?: PropertyFilters): Promise<Property
       name: true,
       type: true,
       propertyNumber: true,
+      managerName: true,
+      accountantName: true,
       createdAt: true,
-      staff: {
-        select: {
-          role: true,
-          user: { select: { id: true, name: true } },
-        },
-      },
     },
     orderBy: { createdAt: 'desc' },
   })
@@ -62,21 +55,51 @@ export async function getProperties(filters?: PropertyFilters): Promise<Property
     type: p.type,
     propertyNumber: p.propertyNumber,
     createdAt: p.createdAt.toISOString(),
-    staff: {
-      manager: p.staff.find((s) => s.role === 'MANAGER')?.user ?? null,
-      accountant: p.staff.find((s) => s.role === 'ACCOUNTANT')?.user ?? null,
-    },
+    managerName: p.managerName,
+    accountantName: p.accountantName,
   }))
 }
 
 export async function getPropertyById(id: string): Promise<PropertyDetail | null> {
-  return prisma.property.findUnique({
+  const p = await prisma.property.findUnique({
     where: { id },
-    include: {
-      buildings: { include: { units: true } },
-      staff: { include: { user: true } },
-    },
-  }) as Promise<PropertyDetail | null>
+    include: { buildings: { include: { units: true } } },
+  })
+  if (!p) return null
+  return {
+    id: p.id,
+    name: p.name,
+    type: p.type,
+    propertyNumber: p.propertyNumber,
+    declarationFileUrl: p.declarationFileUrl,
+    managerName: p.managerName,
+    accountantName: p.accountantName,
+    createdAt: p.createdAt.toISOString(),
+    updatedAt: p.updatedAt.toISOString(),
+    buildings: p.buildings.map((b) => ({
+      id: b.id,
+      street: b.street,
+      houseNumber: b.houseNumber,
+      postalCode: b.postalCode,
+      city: b.city,
+      country: b.country,
+      createdAt: b.createdAt.toISOString(),
+      updatedAt: b.updatedAt.toISOString(),
+      units: b.units.map((u) => ({
+        id: u.id,
+        unitNumber: u.unitNumber,
+        type: u.type,
+        floor: u.floor,
+        entrance: u.entrance,
+        size: u.size ? Number(u.size) : null,
+        coOwnershipShare: u.coOwnershipShare ? Number(u.coOwnershipShare) : null,
+        constructionYear: u.constructionYear,
+        rooms: u.rooms ? Number(u.rooms) : null,
+        createdAt: u.createdAt.toISOString(),
+        updatedAt: u.updatedAt.toISOString(),
+      })),
+    })),
+  }
 }
 
 export async function createProperty(data: CreatePropertyInput): Promise<PropertySummary> {
@@ -93,6 +116,8 @@ export async function createProperty(data: CreatePropertyInput): Promise<Propert
         type: data.type,
         propertyNumber,
         declarationFileUrl: data.declarationFileUrl,
+        managerName: data.managerName ?? null,
+        accountantName: data.accountantName ?? null,
       },
     })
 
@@ -116,30 +141,14 @@ export async function createProperty(data: CreatePropertyInput): Promise<Propert
       })
     }
 
-    // 5. Fetch user names (needed for summary return)
-    const users = await tx.user.findMany({
-      where: { id: { in: [data.managerId, data.accountantId] } },
-      select: { id: true, name: true },
-    })
-
-    // 6. Create PropertyStaff records
-    await tx.propertyStaff.createMany({
-      data: [
-        { propertyId: property.id, userId: data.managerId, role: 'MANAGER' },
-        { propertyId: property.id, userId: data.accountantId, role: 'ACCOUNTANT' },
-      ],
-    })
-
     return {
       id: property.id,
       name: property.name,
       type: property.type,
       propertyNumber: property.propertyNumber,
       createdAt: property.createdAt.toISOString(),
-      staff: {
-        manager: users.find((u) => u.id === data.managerId) ?? null,
-        accountant: users.find((u) => u.id === data.accountantId) ?? null,
-      },
+      managerName: property.managerName,
+      accountantName: property.accountantName,
     }
   })
 }
@@ -152,7 +161,6 @@ export async function deleteProperty(id: string): Promise<void> {
   await prisma.$transaction([
     prisma.unit.deleteMany({ where: { building: { propertyId: id } } }),
     prisma.building.deleteMany({ where: { propertyId: id } }),
-    prisma.propertyStaff.deleteMany({ where: { propertyId: id } }),
     prisma.property.delete({ where: { id } }),
   ])
 }

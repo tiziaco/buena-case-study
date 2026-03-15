@@ -9,9 +9,8 @@ import {
   SidebarHeader,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar"
-import { ChevronLeft, ChevronRight, Settings } from "lucide-react"
+import { Settings } from "lucide-react"
 
 import { MenuNavigator } from "@/components/layout/nav-sidebar"
 import { UserDetailsPanel } from "@/components/layout/user-panel"
@@ -20,24 +19,6 @@ import { SettingsDialog } from "@/components/settings/settings-dialog"
 
 import type { NavItem } from "@/types/nav"
 
-function SidebarEdgeTrigger() {
-  const { toggleSidebar, state, isMobile } = useSidebar()
-
-  if (isMobile) return null
-
-  return (
-    <button
-      onClick={toggleSidebar}
-      aria-label="Toggle Sidebar"
-      className="absolute top-8 -translate-y-1/2 right-1 translate-x-full z-20 flex items-center justify-center w-4 h-6 bg-sidebar border border-sidebar-border rounded-lg shadow-sm cursor-pointer hover:bg-sidebar-accent text-sidebar-foreground transition-colors"
-    >
-      {state === "expanded"
-        ? <ChevronLeft className="size-3.5" />
-        : <ChevronRight className="size-3.5" />
-      }
-    </button>
-  )
-}
 
 export function AppSidebar({
   items,
@@ -47,7 +28,6 @@ export function AppSidebar({
 }) {
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarEdgeTrigger />
       <SidebarHeader>
         <CompanyLogo />
       </SidebarHeader>

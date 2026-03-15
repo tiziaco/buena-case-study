@@ -1,6 +1,6 @@
 "use client"
 
-import { HomeIcon, ArrowLeftRight } from "lucide-react"
+import { HomeIcon, FileText } from "lucide-react"
 import type { NavItem } from "@/types/nav"
 
 /**
@@ -14,6 +14,6 @@ export const HUB_NAV: NavItem[] = [
   {
     title: "Contracts",
     url: "/contracts",
-    icon: ArrowLeftRight,
+    icon: FileText,
   },
 ]

@@ -2,10 +2,10 @@ import { z } from 'zod'
 
 export const CreateBuildingSchema = z.object({
   name: z.string().optional(),
-  street: z.string().min(1),
-  houseNumber: z.string().min(1),
-  postalCode: z.string().min(1),
-  city: z.string().min(1),
+  street: z.string().min(1, 'Street is required'),
+  houseNumber: z.string().min(1, 'House number is required'),
+  postalCode: z.string().min(1, 'Postal code is required'),
+  city: z.string().min(1, 'City is required'),
   country: z.string().default('Germany'),
 })
 

@@ -2,7 +2,6 @@ import { DashboardClient } from '@/components/dashboard/dashboard-client'
 
 type SearchParams = Promise<{
   type?: string
-  managerId?: string
   sizeMin?: string
   sizeMax?: string
   yearMin?: string
@@ -17,7 +16,6 @@ export default async function DashboardPage({
   const params = await searchParams
   const initialFilters = {
     type: params.type,
-    managerId: params.managerId,
     sizeMin: params.sizeMin,
     sizeMax: params.sizeMax,
     yearMin: params.yearMin,
