@@ -5,15 +5,7 @@ import { useFormContext, Controller } from 'react-hook-form'
 import { CheckCircle2, X } from 'lucide-react'
 
 import type { CreatePropertyFormValues } from '@/lib/validators/property'
-import { useUsers } from '@/hooks/use-users'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Field, FieldTitle, FieldError } from '@/components/ui/field'
 import { UploadZone } from './upload-zone'
@@ -30,17 +22,8 @@ export function Step1GeneralInfo({ onFile, isExtracting, extractionSuccess, extr
     register,
     control,
     setValue,
-    watch,
     formState: { errors },
   } = useFormContext<CreatePropertyFormValues>()
-
-  const { data: users = [] } = useUsers()
-
-  const watchedManagerId = watch('managerId')
-  const watchedAccountantId = watch('accountantId')
-
-  const managerOptions = users.filter((u) => u.id !== watchedAccountantId)
-  const accountantOptions = users.filter((u) => u.id !== watchedManagerId)
 
   const [file, setFile] = useState<File | null>(null)
 
@@ -125,57 +108,15 @@ export function Step1GeneralInfo({ onFile, isExtracting, extractionSuccess, extr
       {/* Manager */}
       <Field>
         <FieldTitle>Manager</FieldTitle>
-        <Controller
-          control={control}
-          name="managerId"
-          render={({ field }) => (
-            <Select
-              value={field.value}
-              onValueChange={field.onChange}
-              items={managerOptions.map((u) => ({ value: u.id, label: u.name }))}
-            >
-              <SelectTrigger className="w-64">
-                <SelectValue placeholder="Select manager" />
-              </SelectTrigger>
-              <SelectContent>
-                {managerOptions.map((u) => (
-                  <SelectItem key={u.id} value={u.id}>
-                    {u.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        />
-        {errors.managerId && <FieldError errors={[errors.managerId]} />}
+        <Input {...register('managerName')} placeholder="e.g. Anna Müller" />
+        {errors.managerName && <FieldError errors={[errors.managerName]} />}
       </Field>
 
       {/* Accountant */}
       <Field>
         <FieldTitle>Accountant</FieldTitle>
-        <Controller
-          control={control}
-          name="accountantId"
-          render={({ field }) => (
-            <Select
-              value={field.value}
-              onValueChange={field.onChange}
-              items={accountantOptions.map((u) => ({ value: u.id, label: u.name }))}
-            >
-              <SelectTrigger className="w-64">
-                <SelectValue placeholder="Select accountant" />
-              </SelectTrigger>
-              <SelectContent>
-                {accountantOptions.map((u) => (
-                  <SelectItem key={u.id} value={u.id}>
-                    {u.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        />
-        {errors.accountantId && <FieldError errors={[errors.accountantId]} />}
+        <Input {...register('accountantName')} placeholder="e.g. Thomas Berger" />
+        {errors.accountantName && <FieldError errors={[errors.accountantName]} />}
       </Field>
 
     </div>

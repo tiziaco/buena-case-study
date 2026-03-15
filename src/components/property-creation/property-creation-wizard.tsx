@@ -28,7 +28,7 @@ function mapExtractionToForm(extraction: ExtractionResult): Partial<CreateProper
   }))
 
   if (!buildings.length) {
-    return { name: extraction.property.name, type: extraction.property.type, buildings: [], units: [] }
+    return { name: extraction.property.name, type: extraction.property.type, managerName: extraction.manager_name ?? undefined, accountantName: extraction.accountant_name ?? undefined, buildings: [], units: [] }
   }
 
   const units = extraction.units.map((u) => {
@@ -46,7 +46,7 @@ function mapExtractionToForm(extraction: ExtractionResult): Partial<CreateProper
     }
   })
 
-  return { name: extraction.property.name, type: extraction.property.type, buildings, units }
+  return { name: extraction.property.name, type: extraction.property.type, managerName: extraction.manager_name ?? undefined, accountantName: extraction.accountant_name ?? undefined, buildings, units }
 }
 
 function newBuilding() {
@@ -69,8 +69,8 @@ export function PropertyCreationWizard() {
     defaultValues: {
       name: '',
       type: 'WEG',
-      managerId: '',
-      accountantId: '',
+      managerName: '',
+      accountantName: '',
       declarationFileUrl: undefined,
       buildings: [newBuilding()],
       units: [],
@@ -87,6 +87,8 @@ export function PropertyCreationWizard() {
     const mapped = mapExtractionToForm(extraction)
     if (mapped.name) form.setValue('name', mapped.name)
     if (mapped.type) form.setValue('type', mapped.type)
+    if (mapped.managerName) form.setValue('managerName', mapped.managerName)
+    if (mapped.accountantName) form.setValue('accountantName', mapped.accountantName)
     if (mapped.buildings) form.setValue('buildings', mapped.buildings)
     if (mapped.units) form.setValue('units', mapped.units)
     form.setValue('declarationFileUrl', fileRef)
@@ -99,7 +101,7 @@ export function PropertyCreationWizard() {
     let valid = false
 
     if (step === 1) {
-      valid = await form.trigger(['name', 'type', 'managerId', 'accountantId'])
+      valid = await form.trigger(['name', 'type', 'managerName', 'accountantName'])
     } else if (step === 2) {
       valid = await form.trigger(['buildings'])
     }
