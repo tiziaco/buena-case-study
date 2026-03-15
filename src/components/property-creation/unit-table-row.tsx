@@ -2,8 +2,6 @@
 
 import { useRef } from 'react'
 import { useFormContext, Controller } from 'react-hook-form'
-import { Copy, Trash2 } from 'lucide-react'
-
 import type { CreatePropertyFormValues } from '@/lib/validators/property'
 import { Input } from '@/components/ui/input'
 import {
@@ -14,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
+import { UnitRowActions } from '@/components/property-creation/unit-row-actions'
 
 const UNIT_TYPES = [
   { value: 'APARTMENT', label: 'Apartment' },
@@ -176,26 +175,10 @@ export function UnitTableRow({
 
       {/* Actions */}
       <td className="px-2 py-1.5">
-        <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover/row:opacity-100">
-          <button
-            type="button"
-            onClick={() => onDuplicate(index)}
-            className="rounded p-1 hover:bg-muted text-muted-foreground hover:text-foreground"
-            title="Duplicate row"
-            aria-label="Duplicate unit"
-          >
-            <Copy className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => onDelete(index)}
-            className="rounded p-1 hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
-            title="Delete row"
-            aria-label="Delete unit"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </div>
+        <UnitRowActions
+          onDuplicate={() => onDuplicate(index)}
+          onDelete={() => onDelete(index)}
+        />
       </td>
     </tr>
   )

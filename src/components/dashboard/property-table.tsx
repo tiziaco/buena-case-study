@@ -2,12 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { Trash2 } from 'lucide-react'
 
 import { useProperties } from '@/hooks/use-properties'
 import type { PropertyFilters } from '@/types/property'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -18,6 +16,7 @@ import {
 } from '@/components/ui/table'
 import { DeletePropertyDialog } from '@/components/dashboard/delete-property-dialog'
 import { PropertyTableSkeleton } from '@/components/dashboard/property-table-skeleton'
+import { PropertyRowActions } from '@/components/dashboard/property-row-actions'
 
 const dateFormatter = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium' })
 
@@ -103,17 +102,10 @@ export function PropertyTable({ filters }: PropertyTableProps) {
                     {dateFormatter.format(new Date(property.createdAt))}
                   </TableCell>
                   <TableCell className="w-8 text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="opacity-0 transition-opacity group-hover:opacity-100"
-                      onClick={() =>
-                        setPendingDelete({ id: property.id, name: property.name })
-                      }
-                    >
-                      <Trash2 />
-                      <span className="sr-only">Delete {property.name}</span>
-                    </Button>
+                    <PropertyRowActions
+                      propertyName={property.name}
+                      onDelete={() => setPendingDelete({ id: property.id, name: property.name })}
+                    />
                   </TableCell>
                 </TableRow>
               ))
