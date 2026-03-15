@@ -7,7 +7,6 @@ export async function GET(req: Request): Promise<Response> {
     const { searchParams } = new URL(req.url)
     const filters = {
       type: searchParams.get('type') ?? undefined,
-      managerId: searchParams.get('managerId') ?? undefined,
       sizeMin: searchParams.get('sizeMin') ?? undefined,
       sizeMax: searchParams.get('sizeMax') ?? undefined,
       yearMin: searchParams.get('yearMin') ?? undefined,

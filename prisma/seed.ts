@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
-import { PrismaClient, PropertyType, StaffRole, UnitType } from '../src/generated/prisma/client'
+import { PrismaClient, PropertyType, UnitType } from '../src/generated/prisma/client'
 
 if (!process.env.DATABASE_URL) {
   console.error('ERROR: DATABASE_URL environment variable is not set.')
@@ -15,53 +15,6 @@ const prisma = new PrismaClient({ adapter })
 async function main() {
   console.log('Seeding database...')
 
-  // ── Users ──────────────────────────────────────────────────────────────────
-  const users = await Promise.all([
-    prisma.user.upsert({
-      where: { email: 'anna.mueller@example.com' },
-      update: {},
-      create: { name: 'Anna Müller', email: 'anna.mueller@example.com' },
-    }),
-    prisma.user.upsert({
-      where: { email: 'thomas.berger@example.com' },
-      update: {},
-      create: { name: 'Thomas Berger', email: 'thomas.berger@example.com' },
-    }),
-    prisma.user.upsert({
-      where: { email: 'sarah.klein@example.com' },
-      update: {},
-      create: { name: 'Sarah Klein', email: 'sarah.klein@example.com' },
-    }),
-    prisma.user.upsert({
-      where: { email: 'michael.weber@example.com' },
-      update: {},
-      create: { name: 'Michael Weber', email: 'michael.weber@example.com' },
-    }),
-    prisma.user.upsert({
-      where: { email: 'laura.fischer@example.com' },
-      update: {},
-      create: { name: 'Laura Fischer', email: 'laura.fischer@example.com' },
-    }),
-    prisma.user.upsert({
-      where: { email: 'hans.schneider@example.com' },
-      update: {},
-      create: { name: 'Hans Schneider', email: 'hans.schneider@example.com' },
-    }),
-    prisma.user.upsert({
-      where: { email: 'eva.bauer@example.com' },
-      update: {},
-      create: { name: 'Eva Bauer', email: 'eva.bauer@example.com' },
-    }),
-    prisma.user.upsert({
-      where: { email: 'klaus.richter@example.com' },
-      update: {},
-      create: { name: 'Klaus Richter', email: 'klaus.richter@example.com' },
-    }),
-  ])
-
-  const [anna, thomas, sarah, michael] = users
-  console.log(`Upserted ${users.length} users`)
-
   // ── Property 1: Musterstraße WEG (1 building, 4 units) ────────────────────
   const weg = await prisma.property.upsert({
     where: { propertyNumber: 'PROP-2024-00001' },
@@ -70,6 +23,8 @@ async function main() {
       name: 'Musterstraße WEG',
       type: PropertyType.WEG,
       propertyNumber: 'PROP-2024-00001',
+      managerName: 'Anna Müller',
+      accountantName: 'Thomas Berger',
     },
   })
 
@@ -94,14 +49,6 @@ async function main() {
         { buildingId: wegBuilding.id, unitNumber: 'P01', type: UnitType.PARKING,   floor: -1 },
       ],
     })
-
-    await prisma.propertyStaff.createMany({
-      data: [
-        { propertyId: weg.id, userId: anna.id,   role: StaffRole.MANAGER },
-        { propertyId: weg.id, userId: thomas.id,  role: StaffRole.ACCOUNTANT },
-      ],
-      skipDuplicates: true,
-    })
   }
 
   console.log('Upserted Musterstraße WEG with 1 building, 4 units')
@@ -114,6 +61,8 @@ async function main() {
       name: 'Berliner Allee MV',
       type: PropertyType.MV,
       propertyNumber: 'PROP-2024-00002',
+      managerName: 'Sarah Klein',
+      accountantName: 'Michael Weber',
     },
   })
 
@@ -150,14 +99,6 @@ async function main() {
         { buildingId: mvBuilding2.id, unitNumber: 'B02', type: UnitType.APARTMENT, floor: 1, size: 70.0, rooms: 3 },
         { buildingId: mvBuilding2.id, unitNumber: 'B03', type: UnitType.APARTMENT, floor: 2, size: 70.0, rooms: 3 },
       ],
-    })
-
-    await prisma.propertyStaff.createMany({
-      data: [
-        { propertyId: mv.id, userId: sarah.id,   role: StaffRole.MANAGER },
-        { propertyId: mv.id, userId: michael.id, role: StaffRole.ACCOUNTANT },
-      ],
-      skipDuplicates: true,
     })
   }
 
