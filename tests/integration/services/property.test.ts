@@ -191,7 +191,7 @@ describe('property service', () => {
         name: 'Test Property',
         type: 'WEG',
         propertyNumber: expect.stringMatching(/^PROP-\d{4}-\d{5}$/),
-        createdAt: expect.any(Date),
+        createdAt: expect.any(String),
         staff: {
           manager: { id: manager.id, name: 'Manager' },
           accountant: { id: accountant.id, name: 'Accountant' },
