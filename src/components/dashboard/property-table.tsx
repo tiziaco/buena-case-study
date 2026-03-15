@@ -62,12 +62,12 @@ export function PropertyTable({ filters }: PropertyTableProps) {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead>Name</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Property No.</TableHead>
-              <TableHead>Manager</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead className="w-10" />
+              <TableHead className="w-80 max-w-80">Name</TableHead>
+              <TableHead className="w-30">Type</TableHead>
+              <TableHead className="w-35">Property No.</TableHead>
+              <TableHead className="w-40">Manager</TableHead>
+              <TableHead className="w-15">Created</TableHead>
+              <TableHead className="w-8" />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -85,7 +85,9 @@ export function PropertyTable({ filters }: PropertyTableProps) {
             ) : (
               properties.map((property) => (
                 <TableRow key={property.id} className="group">
-                  <TableCell className="font-medium">{property.name}</TableCell>
+                  <TableCell className="font-medium max-w-60">
+                    <span className="block truncate" title={property.name}>{property.name}</span>
+                  </TableCell>
                   <TableCell>
                     <Badge variant="secondary">{property.type}</Badge>
                   </TableCell>
@@ -100,7 +102,7 @@ export function PropertyTable({ filters }: PropertyTableProps) {
                   <TableCell>
                     {dateFormatter.format(new Date(property.createdAt))}
                   </TableCell>
-                  <TableCell className="w-10 text-right">
+                  <TableCell className="w-8 text-right">
                     <Button
                       variant="ghost"
                       size="icon"
