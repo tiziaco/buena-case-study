@@ -94,7 +94,7 @@ export function PropertyTable({ filters }: PropertyTableProps) {
                     {property.propertyNumber}
                   </TableCell>
                   <TableCell>
-                    {property.staff.manager?.name ?? (
+                    {property.managerName ?? (
                       <span className="text-muted-foreground">—</span>
                     )}
                   </TableCell>

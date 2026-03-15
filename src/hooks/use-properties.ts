@@ -10,7 +10,6 @@ import type { PropertyFilters, PropertySummary } from '@/types/property'
 async function fetchProperties(filters: PropertyFilters): Promise<PropertySummary[]> {
   const params = new URLSearchParams()
   if (filters.type) params.set('type', filters.type)
-  if (filters.managerId) params.set('managerId', filters.managerId)
   if (filters.sizeMin) params.set('sizeMin', filters.sizeMin)
   if (filters.sizeMax) params.set('sizeMax', filters.sizeMax)
   if (filters.yearMin) params.set('yearMin', filters.yearMin)

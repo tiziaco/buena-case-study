@@ -1,19 +1,10 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { useUsers } from '@/hooks/use-users'
 
 interface PropertyFiltersProps {
   filters: {
     type?: string
-    managerId?: string
     sizeMin?: string
     sizeMax?: string
     yearMin?: string
@@ -23,8 +14,6 @@ interface PropertyFiltersProps {
 }
 
 export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
-  const { data: users, isLoading: usersLoading } = useUsers()
-
   function merge(patch: Partial<PropertyFiltersProps['filters']>) {
     onChange({ ...filters, ...patch })
   }
@@ -32,8 +21,6 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
   const hasActiveFilters = Object.values(filters).some(Boolean)
 
   const typeValue: string[] = filters.type ? [filters.type] : ['all']
-
-  const managerSelectValue = filters.managerId ?? 'all'
 
   return (
     <div className="flex flex-wrap gap-4">
@@ -51,37 +38,6 @@ export function PropertyFilters({ filters, onChange }: PropertyFiltersProps) {
           <ToggleGroupItem value="WEG">WEG</ToggleGroupItem>
           <ToggleGroupItem value="MV">MV</ToggleGroupItem>
         </ToggleGroup>
-      </div>
-
-      {/* Manager */}
-      <div className="flex flex-col gap-1.5">
-        <span className="text-sm font-medium text-muted-foreground">Manager</span>
-        {usersLoading ? (
-          <div className="bg-input/30 border-input h-8 w-40 animate-pulse rounded-lg border" />
-        ) : (
-          <Select
-            value={managerSelectValue}
-            onValueChange={(val) => {
-              merge({ managerId: val === 'all' ? undefined : (val ?? '') })
-            }}
-            items={[
-              { value: 'all', label: 'All managers' },
-              ...(users?.map((u) => ({ value: u.id, label: u.name })) ?? []),
-            ]}
-          >
-            <SelectTrigger className="w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All managers</SelectItem>
-              {users?.map((user) => (
-                <SelectItem key={user.id} value={user.id}>
-                  {user.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
       </div>
 
       {/* Surface */}

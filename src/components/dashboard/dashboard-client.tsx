@@ -11,7 +11,6 @@ import { PropertyTable } from '@/components/dashboard/property-table'
 interface DashboardClientProps {
   initialFilters: {
     type?: string
-    managerId?: string
     sizeMin?: string
     sizeMax?: string
     yearMin?: string
@@ -30,7 +29,7 @@ export function DashboardClient({ initialFilters }: DashboardClientProps) {
 
     const params = new URLSearchParams(searchParams.toString())
 
-    const keys = ['type', 'managerId', 'sizeMin', 'sizeMax', 'yearMin', 'yearMax'] as const
+    const keys = ['type', 'sizeMin', 'sizeMax', 'yearMin', 'yearMax'] as const
 
     for (const key of keys) {
       const value = newFilters[key]
