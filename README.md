@@ -55,6 +55,13 @@ make dev     # start Next.js dev server
 
 Open [http://localhost:3000](http://localhost:3000). The seed populates the database with 8 users and 2 sample properties so the dashboard has real data from day one.
 
+To reset your local environment from scratch:
+
+```bash
+make clean        # remove node_modules, .next, and coverage
+make setup        # reinstall and re-seed
+```
+
 ---
 
 ## Useful Commands
@@ -76,6 +83,7 @@ No manual database setup needed — integration tests use [Testcontainers](https
 make docker-up        # start all services (web app + postgres)
 make docker-down      # stop all services
 make docker-rebuild   # clean build + restart
+make docker-clean     # remove containers, volumes, and images
 make docker-logs      # follow all service logs
 make docker-logs-web  # follow web app logs only
 ```

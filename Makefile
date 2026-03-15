@@ -1,4 +1,4 @@
-.PHONY: help install setup dev build docker-build docker-up docker-down docker-restart docker-logs docker-logs-web docker-logs-db docker-clean docker-rebuild docker-up-db db-migrate db-seed db-reset test test-unit test-integration test-coverage
+.PHONY: help install setup clean dev build docker-build docker-up docker-down docker-restart docker-logs docker-logs-web docker-logs-db docker-clean docker-rebuild docker-up-db db-migrate db-seed db-reset test test-unit test-integration test-coverage
 
 DOCKER_COMPOSE ?= docker compose
 
@@ -9,6 +9,7 @@ help:
 	@echo "Setup:"
 	@echo "  make install          - Install dependencies"
 	@echo "  make setup            - Full setup: install + docker-up-db + db-migrate + db-seed"
+	@echo "  make clean            - Remove node_modules, .next, and coverage"
 	@echo ""
 	@echo "Docker:"
 	@echo "  make docker-up        - Start all services (web-app, postgres)"
@@ -49,6 +50,12 @@ install:
 setup: install docker-up-db db-migrate db-seed
 	@echo ""
 	@echo "✅ Setup complete! Run 'make dev' to start the development server."
+
+# Clean local dev artifacts
+clean:
+	@echo "🧹 Cleaning local dev artifacts..."
+	@rm -rf node_modules .next coverage
+	@echo "✅ Clean complete"
 
 # Build the app for production
 build:
