@@ -44,6 +44,7 @@ help:
 install:
 	@echo "📦 Installing dependencies..."
 	@npm install
+	@npx prisma generate
 	@echo "✅ Dependencies installed"
 
 # Full setup
@@ -54,7 +55,7 @@ setup: install docker-up-db db-migrate db-seed
 # Clean local dev artifacts
 clean:
 	@echo "🧹 Cleaning local dev artifacts..."
-	@rm -rf node_modules .next coverage
+	@rm -rf node_modules .next coverage src/generated
 	@echo "✅ Clean complete"
 
 # Build the app for production
@@ -106,7 +107,7 @@ docker-logs-db:
 docker-clean:
 	@echo "🧹 Full cleanup..."
 	@$(DOCKER_COMPOSE) down -v --remove-orphans
-	@docker rmi buenita_app-web-app 2>/dev/null || true
+	@docker rmi buena-case-study-web-app 2>/dev/null || true
 	@echo "✅ Cleanup complete"
 
 docker-rebuild: docker-clean docker-build docker-up
